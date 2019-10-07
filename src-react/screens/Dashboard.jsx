@@ -6,10 +6,7 @@ class Dashboard extends React.Component {
   render () {
     return (
       <div>
-        <ButtonInput />
-        <p>
-          Version: {app.getVersion()}
-        </p>
+          <webview src="https://discordapp.com/login"></webview>
       </div>
     )
   }
