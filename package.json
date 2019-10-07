@@ -1,0 +1,29 @@
+{
+  "name": "test",
+  "version": "0.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "linter": "standard --fix"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "test"
+  ],
+  "author": "GitHub",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "electron": "^4.0.1",
+    "electron-prebuilt-compile": "^4.0.0"
+  },
+  "dependencies": {
+    "decompress": "^4.2.0",
+    "jsdom": "^12.0.0",
+    "lodash": "^4.17.11",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "request-promise": "^4.2.2",
+    "standard": "^12.0.1"
+  }
+}
