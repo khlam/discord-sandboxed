@@ -8,7 +8,7 @@ export let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 1200, height: 800 })
+  mainWindow = new BrowserWindow({ width: 1200, height: 840 })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')

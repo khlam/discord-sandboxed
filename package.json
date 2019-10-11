@@ -1,15 +1,16 @@
 {
-  "name": "test",
+  "name": "SandboxDiscord",
   "version": "0.0.0",
-  "description": "A minimal Electron application",
+  "description": "Browser Discord sandboxed in Electron with push-to-talk remapped.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "linter": "standard --fix"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/khlam/sandboxed-discord",
   "keywords": [
-    "test"
+    "discord",
+    "sandbox"
   ],
   "author": "GitHub",
   "license": "GPL-3.0-or-later",
