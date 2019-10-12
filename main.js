@@ -11,6 +11,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 840,
+    icon: './assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -56,23 +57,36 @@ app.on('activate', function () {
 
 'use strict';
 
-const ioHook = require('iohook');
+const ioHook = require('iohook')
+const win = require('win-audio')
+const microphone = win.mic
+
+app.on('ready', event => {
+  console.log("Muted")
+  mainWindow.webContents.send('ping', 'mic-closed')
+  mainWindow.setTitle("MUTED")
+  microphone.mute();
+})
 
 ioHook.on('mousedown', event => {
   if (event.button == '4') {
-    console.log("mouse4 down")
+    console.log("Talking")
     mainWindow.webContents.send('ping', 'mic-open')
+    mainWindow.setTitle("MIC OPEN")
+    microphone.unmute();
   }
 });
 
 ioHook.on('mouseup', event => {
   if (event.button == '4') {
-    console.log("mouse4 up")
-    mainWindow.webContents.send('ping', 'mic-closed')
+    setTimeout(function (){
+      console.log("Muted")
+      mainWindow.webContents.send('ping', 'mic-closed')
+      mainWindow.setTitle("MUTED")
+      microphone.mute();
+    }, 600);
   }
 })
-// Register and start hook
-ioHook.start();
 
-// Alternatively, pass true to start in DEBUG mode.
+ioHook.start();
 ioHook.start(true);

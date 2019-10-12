@@ -1,17 +1,16 @@
-let robot = require("kbm-robot");
-robot.startJar();
-
 require('electron').ipcRenderer.on('ping', (event, message) => {
     if (message === 'mic-open'){
         console.log("mic is open")
-        robot.press("n").go()
+        playSound()
     }
     if (message === 'mic-closed'){
         console.log("mic is closed")
-        robot.release("n").go()
+        playSound()
     }
 })
 
-document.addEventListener('keydown', function (e) {
-    console.log('Key: ' + e.key + ' pressed');
-});
+function playSound() {
+    var sound = document.getElementById("audio");
+    sound.volume=0.3
+    sound.play();
+}

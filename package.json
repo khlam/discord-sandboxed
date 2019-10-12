@@ -1,26 +1,29 @@
 {
-  "name": "electron-quick-start",
+  "name": "SBD",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Sandboxed Discord with Push-to-Talk",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "package-win": "electron-builder --win --publish never"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/khlam/sandboxed-discord",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "discord",
+    "privacy",
+    "sandbox"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Kin-Ho Lam",
+  "license": "GNU GENERAL PUBLIC LICENSE Version 3",
   "devDependencies": {
-    "electron": "^6.0.12"
+    "electron": "^6.0.12",
+    "electron-builder": "^21.2.0"
   },
   "dependencies": {
-    "iohook": "^0.6.1"
+    "iohook": "^0.6.1",
+    "node-gyp": "^6.0.0",
+    "win-audio": "^2.0.2"
   },
   "iohook": {
     "targets": [
@@ -34,5 +37,29 @@
     "arches": [
       "x64"
     ]
+  },
+  "build": {
+    "appId": "com.electron.SandboxedDiscord",
+    "productName": "World Of Addons",
+    "win": {
+      "asar": true,
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "license": "LICENSE.md",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": true
+    },
+    "directories": {
+      "output": "release"
+    }
   }
 }
