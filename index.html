@@ -2,35 +2,12 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Test</title>
     <link type="text/css" rel="stylesheet" href="./css/style.css">
   </head>
   <body>
-    <div id="root"></div>
-    <div id="error"></div>
+    
+    <webview src="https://discordapp.com/login"></webview>
 
-    <script>
-      const { ipcRenderer } = require('electron')
-           
-      // TODO: remove into react component
-      ipcRenderer.on('error', function(event, errObj){
-        showError(errObj)
-      })
-      
-      // Generic show error in error div function
-      function showError(errObj) {
-        if (errObj.hasOwnProperty("error")) {
-          console.log(errObj.error)
-          document.getElementById("error").innerHTML = errObj.error
-          return true
-        }
-        return false
-      }
-
-    </script>
-
-    <script>
-      import './src-react/App.jsx'
-    </script>
+    <script src="./renderer.js"></script>
   </body>
 </html>

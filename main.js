@@ -1,14 +1,22 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow } from 'electron'
-import { modInput } from './src/modInput'
+const {app, BrowserWindow} = require('electron')
+const path = require('path')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-export let mainWindow
+let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 1200, height: 840 })
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 840,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      webviewTag: true
+    }
+  })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
@@ -17,7 +25,7 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
+  mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -31,38 +39,34 @@ function createWindow () {
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
+app.on('window-all-closed', function () {
+  // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  if (process.platform !== 'darwin') app.quit()
 })
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
+app.on('activate', function () {
+  // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
+  if (mainWindow === null) createWindow()
 })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-const { ipcMain } = require('electron')
+'use strict';
 
-// newInput listener
-ipcMain.on('newInput', (e, newInput) => {
-  console.log('Received new input: ' + newInput)
-  const inputObj = modInput(newInput)
-  console.log(`inputObj:\t${inputObj}`)
-  console.log(inputObj)
-  mainWindow.webContents.send('newInputObj', inputObj)
-})
+const ioHook = require('iohook');
 
-// error listener
-ipcMain.on('error', (e, errorObj) => {
-  console.log('\tSending error message ' + errorObj.error)
-  mainWindow.webContents.send('error', errorObj)
+ioHook.on('mousedown', event => {
+  console.log(event);
+});
+
+ioHook.on('mouseup', event => {
+  console.log(event);
 })
+// Register and start hook
+ioHook.start();
+
+// Alternatively, pass true to start in DEBUG mode.
+ioHook.start(true);

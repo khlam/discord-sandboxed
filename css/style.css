@@ -4,6 +4,7 @@ html, body{
     margin:0px;
     padding: 0;
     overflow: hidden;
+    background-color: green;
  }
 
 div {
@@ -14,7 +15,6 @@ div {
 webview {
     height:100%;
     width:100%;
-    scro
 }
 
 ::-webkit-scrollbar {
