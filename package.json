@@ -41,7 +41,7 @@
   },
   "build": {
     "appId": "com.electron.SandboxedDiscord",
-    "productName": "World Of Addons",
+    "productName": "Sandboxed Discord",
     "win": {
       "asar": true,
       "icon": "assets/icon.ico",
