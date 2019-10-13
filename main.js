@@ -89,16 +89,6 @@ app.on('ready', event => {
   console.log("Init done")
 })
 
-ioHook.on('mouseclick', event => {
-  if (event.button == '4') {
-    if (talkOpen === false) {
-      talkOpen = true
-      toggleMicOpen()
-    }
-  }
-});
-
-
 ioHook.on('mousedown', event => {
   if (event.button == '4') {
     if (talkOpen === false) {
@@ -107,7 +97,6 @@ ioHook.on('mousedown', event => {
     }
   }
 })
-
 
 ioHook.on('mouseup', event => {
   if (event.button == '4') {
