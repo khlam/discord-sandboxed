@@ -61,48 +61,68 @@ const ioHook = require('iohook')
 const win = require('win-audio')
 const microphone = win.mic
 
-let talkOpen = false
 
-function toggleMicOpen() {
-  if (talkOpen === false) {
-    setTimeout(function (){
-      talkOpen = false
-      console.log("Muted")
-      mainWindow.webContents.send('ping', 'mic-closed')
-      mainWindow.setTitle("MUTED")
-      microphone.mute();
-    }, 2000);
-  }else {
-    talkOpen = true
+let isTalking = false
+
+// Resolves the promise after 2 seconds
+function muteDelay() {
+  return new Promise((resolve) => {
+    setTimeout(function(){
+      return resolve(true)
+    }, 1300);
+  })
+}
+
+// Mutes the Mic
+function muteMic() {
+  return new Promise((resolve) => {
+    if (isTalking === false) {
+      muteDelay().then(val => {
+        if (isTalking === false) {
+          microphone.mute(); // Mute mic
+          console.log("Muted")
+          mainWindow.webContents.send('ping', 'mic-closed')
+          mainWindow.setTitle("MUTED")
+          return resolve(true)
+        }
+      })
+    }
+  })
+}
+
+function unmuteMic() {
+  return new Promise((resolve, reject) => {
     console.log("Talking")
+    isTalking = true
     mainWindow.webContents.send('ping', 'mic-open')
     mainWindow.setTitle("MIC OPEN")
-    microphone.unmute();
-  } 
+    microphone.unmute(); // Unmute mic
+    return resolve(true)
+  })
 }
 
 app.on('ready', event => {
-  talkOpen = false
-  toggleMicOpen()
   ioHook.start();
-  ioHook.start(true);
-  console.log("Init done")
+
+  console.log("Init Finished")
+
+  console.log("Muted")
+  microphone.mute();
+  mainWindow.webContents.send('ping', 'mic-closed')
+  mainWindow.setTitle("MUTED")
 })
 
 ioHook.on('mousedown', event => {
   if (event.button == '4') {
-    if (talkOpen === false) {
-      talkOpen = true
-      toggleMicOpen()
-    }
+    unmuteMic()
   }
 })
 
 ioHook.on('mouseup', event => {
   if (event.button == '4') {
-    if (talkOpen === true) {
-      talkOpen = false
-      toggleMicOpen()
-    }
+    isTalking = false
+    muteMic()
   }
 })
+
+
