@@ -61,32 +61,59 @@ const ioHook = require('iohook')
 const win = require('win-audio')
 const microphone = win.mic
 
-app.on('ready', event => {
-  console.log("Muted")
-  mainWindow.webContents.send('ping', 'mic-closed')
-  mainWindow.setTitle("MUTED")
-  microphone.mute();
-})
+let talkOpen = false
 
-ioHook.on('mousedown', event => {
-  if (event.button == '4') {
-    console.log("Talking")
-    mainWindow.webContents.send('ping', 'mic-open')
-    mainWindow.setTitle("MIC OPEN")
-    microphone.unmute();
-  }
-});
-
-ioHook.on('mouseup', event => {
-  if (event.button == '4') {
+function toggleMicOpen() {
+  if (talkOpen === false) {
     setTimeout(function (){
+      talkOpen = false
       console.log("Muted")
       mainWindow.webContents.send('ping', 'mic-closed')
       mainWindow.setTitle("MUTED")
       microphone.mute();
-    }, 600);
+    }, 2000);
+  }else {
+    talkOpen = true
+    console.log("Talking")
+    mainWindow.webContents.send('ping', 'mic-open')
+    mainWindow.setTitle("MIC OPEN")
+    microphone.unmute();
+  } 
+}
+
+app.on('ready', event => {
+  talkOpen = false
+  toggleMicOpen()
+  ioHook.start();
+  ioHook.start(true);
+  console.log("Init done")
+})
+
+ioHook.on('mouseclick', event => {
+  if (event.button == '4') {
+    if (talkOpen === false) {
+      talkOpen = true
+      toggleMicOpen()
+    }
+  }
+});
+
+
+ioHook.on('mousedown', event => {
+  if (event.button == '4') {
+    if (talkOpen === false) {
+      talkOpen = true
+      toggleMicOpen()
+    }
   }
 })
 
-ioHook.start();
-ioHook.start(true);
+
+ioHook.on('mouseup', event => {
+  if (event.button == '4') {
+    if (talkOpen === true) {
+      talkOpen = false
+      toggleMicOpen()
+    }
+  }
+})

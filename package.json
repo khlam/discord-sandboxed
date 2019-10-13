@@ -1,14 +1,14 @@
 {
-  "name": "SBD",
+  "name": "DSB",
   "version": "1.0.0",
-  "description": "Sandboxed Discord with Push-to-Talk",
+  "description": "Discord Sandboxed with Push-to-Talk",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
     "package-win": "electron-builder --win --publish never"
   },
-  "repository": "https://github.com/khlam/sandboxed-discord",
+  "repository": "https://github.com/khlam/discord-sandboxed",
   "keywords": [
     "discord",
     "privacy",
@@ -39,8 +39,8 @@
     ]
   },
   "build": {
-    "appId": "com.electron.SandboxedDiscord",
-    "productName": "Sandboxed Discord",
+    "appId": "com.electron.DiscordSandboxed",
+    "productName": "Discord Sandboxed",
     "win": {
       "asar": true,
       "icon": "assets/icon.ico",

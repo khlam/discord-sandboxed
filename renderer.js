@@ -1,16 +1,14 @@
 require('electron').ipcRenderer.on('ping', (event, message) => {
     if (message === 'mic-open'){
         console.log("mic is open")
-        playSound()
+        let unmute = document.getElementById("unmute");
+        unmute.volume=0.3
+        unmute.play();
     }
     if (message === 'mic-closed'){
         console.log("mic is closed")
-        playSound()
+        let mute = document.getElementById("mute");
+        mute.volume=0.3
+        mute.play();
     }
 })
-
-function playSound() {
-    var sound = document.getElementById("audio");
-    sound.volume=0.3
-    sound.play();
-}
