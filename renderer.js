@@ -1,11 +1,8 @@
-const unMuteSound = new Audio('./assets/unmute.mp3')
-const muteSound = new Audio('./assets/mute.mp3')
-
 const { ipcRenderer } = require('electron')
 
 onload = () => {
     const webview = document.querySelector('webview')
-    webview.openDevTools()
+    //webview.openDevTools()
     webview.addEventListener('console-message', (e) => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
@@ -20,16 +17,14 @@ onload = () => {
 
     ipcRenderer.on('ping', (event, message) => {
         if (message === 'mic-open'){
-            console.log("mic is open")
+            console.log("talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-            //unMuteSound.play()
         }
         if (message === 'mic-closed'){
-            console.log("mic is closed")
+            console.log("not talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-            //muteSound.play()
         }
     })
 }
