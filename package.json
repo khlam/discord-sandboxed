@@ -21,9 +21,7 @@
     "electron-builder": "^21.2.0"
   },
   "dependencies": {
-    "iohook": "^0.6.1",
-    "node-gyp": "^6.0.0",
-    "win-audio": "^2.0.2"
+    "iohook": "^0.6.1"
   },
   "iohook": {
     "targets": [

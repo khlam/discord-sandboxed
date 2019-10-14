@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
+const ioHook = require('iohook')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -18,7 +19,10 @@ function createWindow () {
       webviewTag: true
     }
   })
-  //mainWindow.setMenu(null)
+
+  
+  mainWindow.setMenu(null)
+  
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
@@ -57,30 +61,23 @@ app.on('activate', function () {
 
 'use strict';
 
-const ioHook = require('iohook')
-const win = require('win-audio')
-const microphone = win.mic
-
 let isTalking = false
 let isConnected = false
 
-// Resolves the promise after 2 seconds
 function muteDelay() {
   return new Promise((resolve) => {
     setTimeout(function(){
       return resolve(true)
-    }, 1300);
+    }, 10);
   })
 }
 
-// Globally mutes the Mic
 function muteMic() {
   if (isConnected === true) {
     return new Promise((resolve) => {
       if (isTalking === false) {
         muteDelay().then(val => {
           if (isTalking === false) {
-            microphone.mute() // Mute mic
             console.log("Muted")
             mainWindow.webContents.send('ping', 'mic-closed')
             mainWindow.setTitle("MUTED")
@@ -92,7 +89,6 @@ function muteMic() {
   }
 }
 
-// Globally unmutes the Mic
 function unmuteMic() {
   if (isConnected === true) {
     return new Promise((resolve, reject) => {
@@ -100,7 +96,6 @@ function unmuteMic() {
       isTalking = true
       mainWindow.webContents.send('ping', 'mic-open')
       mainWindow.setTitle("MIC OPEN")
-      microphone.unmute(); // Unmute mic
       return resolve(true)
     })
   }
@@ -108,6 +103,7 @@ function unmuteMic() {
 
 app.on('ready', event => {
   ioHook.start();
+  muteMic()
 })
 
 ioHook.on('mousedown', event => {
@@ -131,7 +127,6 @@ ipcMain.on('asynchronous-message', (event, arg) => {
   if (arg === 'disconnected') {
     isConnected = false
     isTalking = false
-    microphone.unmute(); // Unmute mic
   }
   console.log(arg)
 })

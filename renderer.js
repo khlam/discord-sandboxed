@@ -17,17 +17,19 @@ onload = () => {
             ipcRenderer.send('asynchronous-message', 'disconnected')
         }
     })
+
+    ipcRenderer.on('ping', (event, message) => {
+        if (message === 'mic-open'){
+            console.log("mic is open")
+            webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
+            webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+            //unMuteSound.play()
+        }
+        if (message === 'mic-closed'){
+            console.log("mic is closed")
+            webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
+            webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+            //muteSound.play()
+        }
+    })
 }
-
-ipcRenderer.on('ping', (event, message) => {
-    if (message === 'mic-open'){
-        console.log("mic is open")
-        unMuteSound.play()
-    }
-    if (message === 'mic-closed'){
-        console.log("mic is closed")
-        muteSound.play()
-    }
-})
-
-
