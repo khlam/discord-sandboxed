@@ -64,6 +64,7 @@ const microphone = win.mic
 
 let isTalking = false
 
+
 // Resolves the promise after 2 seconds
 function muteDelay() {
   return new Promise((resolve) => {
@@ -79,7 +80,7 @@ function muteMic() {
     if (isTalking === false) {
       muteDelay().then(val => {
         if (isTalking === false) {
-          microphone.mute(); // Mute mic
+          microphone.mute() // Mute mic
           console.log("Muted")
           mainWindow.webContents.send('ping', 'mic-closed')
           mainWindow.setTitle("MUTED")
@@ -124,5 +125,3 @@ ioHook.on('mouseup', event => {
     muteMic()
   }
 })
-
-
