@@ -18,7 +18,7 @@ function createWindow () {
       webviewTag: true
     }
   })
-  mainWindow.setMenu(null)
+  //mainWindow.setMenu(null)
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
@@ -61,9 +61,7 @@ const ioHook = require('iohook')
 const win = require('win-audio')
 const microphone = win.mic
 
-
 let isTalking = false
-
 
 // Resolves the promise after 2 seconds
 function muteDelay() {
@@ -74,7 +72,7 @@ function muteDelay() {
   })
 }
 
-// Mutes the Mic
+// Globally mutes the Mic
 function muteMic() {
   return new Promise((resolve) => {
     if (isTalking === false) {
@@ -91,6 +89,7 @@ function muteMic() {
   })
 }
 
+// Globally unmutes the Mic
 function unmuteMic() {
   return new Promise((resolve, reject) => {
     console.log("Talking")
