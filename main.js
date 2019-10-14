@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcRenderer} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -62,6 +62,7 @@ const win = require('win-audio')
 const microphone = win.mic
 
 let isTalking = false
+let isConnected = false
 
 // Resolves the promise after 2 seconds
 function muteDelay() {
@@ -74,42 +75,39 @@ function muteDelay() {
 
 // Globally mutes the Mic
 function muteMic() {
-  return new Promise((resolve) => {
-    if (isTalking === false) {
-      muteDelay().then(val => {
-        if (isTalking === false) {
-          microphone.mute() // Mute mic
-          console.log("Muted")
-          mainWindow.webContents.send('ping', 'mic-closed')
-          mainWindow.setTitle("MUTED")
-          return resolve(true)
-        }
-      })
-    }
-  })
+  if (isConnected === true) {
+    return new Promise((resolve) => {
+      if (isTalking === false) {
+        muteDelay().then(val => {
+          if (isTalking === false) {
+            microphone.mute() // Mute mic
+            console.log("Muted")
+            mainWindow.webContents.send('ping', 'mic-closed')
+            mainWindow.setTitle("MUTED")
+            return resolve(true)
+          }
+        })
+      }
+    })
+  }
 }
 
 // Globally unmutes the Mic
 function unmuteMic() {
-  return new Promise((resolve, reject) => {
-    console.log("Talking")
-    isTalking = true
-    mainWindow.webContents.send('ping', 'mic-open')
-    mainWindow.setTitle("MIC OPEN")
-    microphone.unmute(); // Unmute mic
-    return resolve(true)
-  })
+  if (isConnected === true) {
+    return new Promise((resolve, reject) => {
+      console.log("Talking")
+      isTalking = true
+      mainWindow.webContents.send('ping', 'mic-open')
+      mainWindow.setTitle("MIC OPEN")
+      microphone.unmute(); // Unmute mic
+      return resolve(true)
+    })
+  }
 }
 
 app.on('ready', event => {
   ioHook.start();
-
-  console.log("Init Finished")
-
-  console.log("Muted")
-  microphone.mute();
-  mainWindow.webContents.send('ping', 'mic-closed')
-  mainWindow.setTitle("MUTED")
 })
 
 ioHook.on('mousedown', event => {
@@ -123,4 +121,17 @@ ioHook.on('mouseup', event => {
     isTalking = false
     muteMic()
   }
+})
+
+ipcMain.on('asynchronous-message', (event, arg) => {
+  if (arg === 'connected') {
+    isConnected = true
+  }
+
+  if (arg === 'disconnected') {
+    isConnected = false
+    isTalking = false
+    microphone.unmute(); // Unmute mic
+  }
+  console.log(arg)
 })
