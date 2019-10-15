@@ -4,7 +4,7 @@
   "description": "Discord Sandboxed with Push-to-Talk",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron . dev",
     "postinstall": "electron-builder install-app-deps",
     "package-win": "electron-builder --win --publish never"
   },

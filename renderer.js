@@ -2,7 +2,9 @@ const { ipcRenderer } = require('electron')
 
 onload = () => {
     const webview = document.querySelector('webview')
-    //webview.openDevTools()
+
+    ipcRenderer.send('asynchronous-message', 'DOMready')
+
     webview.addEventListener('console-message', (e) => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
@@ -15,16 +17,23 @@ onload = () => {
         }
     })
 
-    ipcRenderer.on('ping', (event, message) => {
-        if (message === 'mic-open'){
+    ipcRenderer.on('ping', (event, msg) => {
+        if (msg === 'mic-open'){
             console.log("talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
         }
-        if (message === 'mic-closed'){
+        if (msg === 'mic-closed'){
             console.log("not talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+        }
+    })
+
+    ipcRenderer.on('devMode', (event, msg) => {
+        console.log(`Dev Mode: ${msg}`)
+        if (msg === true) {
+            webview.openDevTools()
         }
     })
 }

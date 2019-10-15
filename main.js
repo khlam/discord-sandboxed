@@ -7,6 +7,8 @@ const ioHook = require('iohook')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+let devMode = false
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -19,9 +21,15 @@ function createWindow () {
       webviewTag: true
     }
   })
+  if (process.argv.length === 3) {
+    if (process.argv[2] === 'dev'){
+      devMode = true
+    }
+  }
 
-  
-  mainWindow.setMenu(null)
+  if (devMode === false){
+    mainWindow.setMenu(null)
+  }
   
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
@@ -103,7 +111,8 @@ function unmuteMic() {
 
 app.on('ready', event => {
   ioHook.start();
-  muteMic()
+
+  console.log(`Dev Mode: ${devMode}`)
 })
 
 ioHook.on('mousedown', event => {
@@ -119,14 +128,17 @@ ioHook.on('mouseup', event => {
   }
 })
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  if (arg === 'connected') {
+ipcMain.on('asynchronous-message', (event, msg) => {
+  if (msg === 'connected') {
     isConnected = true
   }
 
-  if (arg === 'disconnected') {
+  if (msg === 'disconnected') {
     isConnected = false
     isTalking = false
   }
-  console.log(arg)
+
+  if (msg === 'DOMready') {
+      mainWindow.webContents.send('devMode', devMode)
+  }
 })
