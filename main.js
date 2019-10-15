@@ -12,9 +12,10 @@ let devMode = false
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 840,
+    width: 1000,
+    height: 750,
     icon: './assets/icon.ico',
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,

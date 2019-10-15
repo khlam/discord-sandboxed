@@ -4,18 +4,82 @@ html, body{
     margin:0px;
     padding: 0;
     overflow: hidden;
+    font-family: 'Roboto', sans-serif;
  }
 
 div {
     width:100%;
-    height:100%;
+    height:97%;
  }
 
 webview {
     height:100%;
-    width:100%;
+    height:97%;
 }
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+
+.title-bar {
+    -webkit-app-region: drag;
+    margin: 0;
+    display: flex;
+    background-color: #23272A;
+    width: 100%;
+    height: 3%;
+  }
+  
+.menu-button-container {
+    background-color: #23272A;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.status {
+    background-color: #23272A;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.window-controls-container {
+    background-color: #23272A;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.minimize-button {
+    border:none;
+    color: #FFFFFF;
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    margin: 1px;
+    width: 20px;
+    height: 20px;
+}
+
+.minimize-button:hover {
+    background-color: #99AAB5;
+}
+
+.close-button {
+    border:none;
+    color: #FFFFFF;
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    margin: 1px;
+    margin-right: 3px;
+    width: 20px;
+    height: 20px;
+}
+
+.close-button:hover {
+    background-color: #B22222;
 }

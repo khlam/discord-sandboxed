@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron')
+const { remote, ipcRenderer } = require('electron')
 
 onload = () => {
     const webview = document.querySelector('webview')
@@ -22,11 +22,19 @@ onload = () => {
             console.log("talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+            document.getElementById("title-bar-status").style.backgroundColor = "green"
+            document.getElementById("title-bar-controls").style.backgroundColor = "green"
+            document.getElementById("title-bar").style.backgroundColor = "green"
+
         }
         if (msg === 'mic-closed'){
             console.log("not talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+            document.getElementById("title-bar-status").style.backgroundColor = "#23272A"
+            document.getElementById("title-bar-controls").style.backgroundColor = "#23272A"
+            document.getElementById("title-bar").style.backgroundColor = "#23272A"
+
         }
     })
 
@@ -37,3 +45,11 @@ onload = () => {
         }
     })
 }
+
+document.getElementById('minimize-button').addEventListener('click', () => {
+    remote.getCurrentWindow().minimize()
+  })
+  
+document.getElementById('close-button').addEventListener('click', () => {
+    remote.app.quit()
+})
