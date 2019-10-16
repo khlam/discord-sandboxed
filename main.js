@@ -12,8 +12,8 @@ let devMode = false
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 750,
+    width: 1230,
+    height: 730,
     icon: './assets/icon.ico',
     frame: false,
     webPreferences: {
@@ -77,7 +77,7 @@ function muteDelay() {
   return new Promise((resolve) => {
     setTimeout(function(){
       return resolve(true)
-    }, 10);
+    }, 1300); // big fat push to talk delay .com
   })
 }
 

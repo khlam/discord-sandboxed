@@ -9,6 +9,12 @@ onload = () => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
             ipcRenderer.send('asynchronous-message', 'connected')
+            // The only place where we execute arbitrary JS into the webview. This is to remove the download button at the bottom of the server list.
+            // Obviously malicious actors could take this source and create their own malicious discord client that steals auth tokens or something.
+            webview.executeJavaScript(`
+            let x = document.getElementsByClassName("listItem-2P_4kh");
+            x[x.length-1].innerHTML = "";
+            `)
         }
 
         if (e.message === "Close RTCPeerConnection") {
