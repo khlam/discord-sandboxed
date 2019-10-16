@@ -15,8 +15,8 @@
       </div>
     </div>
 
-
-    <webview id="discord" webpreferences="plugins=false, webgl=false, enableRemoteModule=false" src="https://discordapp.com/login"></webview>
+    <!--Note that running in electron is already a chromium sandbox. Discord can no longer peek at a user's clipboard.-->
+    <webview id="discord" webpreferences="plugins=false, webgl=false, enableRemoteModule=false, sandbox=true, useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" src="https://discordapp.com/login"></webview>
 
     <script src="./renderer.js"></script>
   </body>

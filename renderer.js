@@ -4,22 +4,40 @@ onload = () => {
     const webview = document.querySelector('webview')
 
     ipcRenderer.send('asynchronous-message', 'DOMready')
+    
+    // Execute JS into the webview to detect when logging in is complete
+    webview.addEventListener('did-finish-load', function() {
+         webview.executeJavaScript(`
+         let dlButton = document.getElementsByClassName("listItem-2P_4kh");
+         t = setInterval(function(){
+             if(dlButton.length != 0) {
+                 console.log("discord-load-complete")
+                 clearInterval(t)
+             }else {
+                 console.log("waiting for load")
+             }
+         }, 1500);
+         `)
+    });
+
 
     webview.addEventListener('console-message', (e) => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
             ipcRenderer.send('asynchronous-message', 'connected')
-            // The only place where we execute arbitrary JS into the webview. This is to remove the download button at the bottom of the server list.
-            // Obviously malicious actors could take this source and create their own malicious discord client that steals auth tokens or something.
-            webview.executeJavaScript(`
-            let x = document.getElementsByClassName("listItem-2P_4kh");
-            x[x.length-1].innerHTML = "";
-            `)
         }
 
         if (e.message === "Close RTCPeerConnection") {
             console.log("Disconnected from server")
             ipcRenderer.send('asynchronous-message', 'disconnected')
+        }
+
+        // Execute JS into the webview after login to remove the download button at the bottom of the server list.
+        if (e.message === "discord-load-complete") {
+            webview.executeJavaScript(`
+                let a = document.getElementsByClassName("listItem-2P_4kh");
+                a[a.length-1].innerHTML = "";
+            `)
         }
     })
 
