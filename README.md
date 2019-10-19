@@ -39,6 +39,17 @@ Discord can still collect the following information. Since these are inherent to
 - Messages, client data, emails, and voice data
 - Links you have clicked/opened from within the client (Passing links to a browser has been disabled to somewhat mitigate this)
 
+
+## Building From Source
+1. Install [Node (https://nodejs.org/en/download/)](https://nodejs.org/en/download/)
+2. Clone Repo `git clone https://github.com/khlam/discord-sandboxed.git`
+3. Install dependencies `npm i && npm i -d`
+4. Run `npm start`
+5. (Extra Step) Create Windows installer `npm run package-win`
+
+
+
+
 > This Discord-Sandbox open source project is not affiliated with Discord or Discord Inc.
 I do not claim to have created Discord.
 Discord-Sandbox is not the official Discord client.
