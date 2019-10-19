@@ -7,8 +7,18 @@ function removeBloat(webview) {
     `)
 }
 
+function muteMic(webview){
+    console.log("not talking")
+    webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
+    webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+    document.getElementById("title-bar-status").style.backgroundColor = "#212226"
+    document.getElementById("title-bar-controls").style.backgroundColor = "#212226"
+    document.getElementById("title-bar").style.backgroundColor = "#212226"
+}
+
 onload = () => {
     const webview = document.querySelector('webview')
+    let muteTimeout = null
 
     ipcRenderer.send('asynchronous-message', 'DOMready')
     
@@ -95,8 +105,9 @@ onload = () => {
         }
     })
 
-    ipcRenderer.on('ping', (event, msg) => {
+    ipcRenderer.on('micOpen', (event, msg) => {
         if (msg === 'mic-open'){
+            clearTimeout(muteTimeout)
             console.log("talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
@@ -105,14 +116,11 @@ onload = () => {
             document.getElementById("title-bar").style.backgroundColor = "green"
 
         }
-        if (msg === 'mic-closed'){
-            console.log("not talking")
-            webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
-            webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-            document.getElementById("title-bar-status").style.backgroundColor = "#212226"
-            document.getElementById("title-bar-controls").style.backgroundColor = "#212226"
-            document.getElementById("title-bar").style.backgroundColor = "#212226"
+    })
 
+    ipcRenderer.on('micClose', (event, msg) => {
+        if (msg === 'mic-closed'){
+            muteTimeout = setTimeout(() => muteMic(webview), 1000); // 1 second threshold incase of accidental double-click or release so the user doesn't cut-out
         }
     })
 

@@ -78,7 +78,7 @@ function muteMic() {
     return new Promise((resolve) => {
       if (isTalking === false) {
         console.log("Muted")
-        mainWindow.webContents.send('ping', 'mic-closed')
+        mainWindow.webContents.send('micClose', 'mic-closed')
         mainWindow.setTitle("MUTED")
         return resolve(true)
       }
@@ -91,7 +91,7 @@ function unmuteMic() {
     return new Promise((resolve, reject) => {
       console.log("Talking")
       isTalking = true
-      mainWindow.webContents.send('ping', 'mic-open')
+      mainWindow.webContents.send('micOpen', 'mic-open')
       mainWindow.setTitle("MIC OPEN")
       return resolve(true)
     })
