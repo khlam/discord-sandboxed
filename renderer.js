@@ -1,10 +1,8 @@
 const { remote, ipcRenderer } = require('electron')
 
 function removeBloat(webview) {
-    webview.executeJavaScript(`
-    document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();
-    document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();
-    `)
+    webview.executeJavaScript(`document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();`) // Remove top-right help button
+    webview.executeJavaScript(`document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();`) // Remove gift from chat
 }
 
 function muteMic(webview){
@@ -71,31 +69,27 @@ onload = () => {
             `)
         }
 
+        // To be finished
         if (e.message === "DOM changed") {
             removeBloat(webview)
         }
 
         // Execute JS into the webview after login
-        // Removes download button and help button
         if (e.message === "discord-load-complete") {
-            webview.executeJavaScript(`
-            document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();
-            
-            `)
+            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button
             removeBloat(webview)
         }
     })
 
     ipcRenderer.on('micOpen', (event, msg) => {
         if (msg === 'mic-open'){
-            clearTimeout(muteTimeout)
+            clearTimeout(muteTimeout) // Cancel mic-off incase of accidental double-tap
             console.log("talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
             document.getElementById("title-bar-status").style.backgroundColor = "green"
             document.getElementById("title-bar-controls").style.backgroundColor = "green"
             document.getElementById("title-bar").style.backgroundColor = "green"
-
         }
     })
 

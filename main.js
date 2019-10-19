@@ -69,38 +69,25 @@ app.on('activate', function () {
 // code. You can also put them in separate files and require them here.
 
 'use strict';
-
-let isTalking = false
+let selfMute = false
 let isConnected = false
 
 function muteMic() {
-  if (isConnected === true) {
-    return new Promise((resolve) => {
-      if (isTalking === false) {
-        console.log("Muted")
-        mainWindow.webContents.send('micClose', 'mic-closed')
-        mainWindow.setTitle("MUTED")
-        return resolve(true)
-      }
-    })
-  }
+  console.log("Muted")
+  mainWindow.webContents.send('micClose', 'mic-closed')
+  mainWindow.setTitle("MUTED")
 }
 
 function unmuteMic() {
-  if (isConnected === true) {
-    return new Promise((resolve, reject) => {
-      console.log("Talking")
-      isTalking = true
-      mainWindow.webContents.send('micOpen', 'mic-open')
-      mainWindow.setTitle("MIC OPEN")
-      return resolve(true)
-    })
+  if (isConnected === true && selfMute === false) {
+    console.log("Talking")
+    mainWindow.webContents.send('micOpen', 'mic-open')
+    mainWindow.setTitle("MIC OPEN")
   }
 }
 
 app.on('ready', event => {
   ioHook.start();
-
   console.log(`Dev Mode: ${devMode}`)
 })
 
@@ -112,7 +99,6 @@ ioHook.on('mousedown', event => {
 
 ioHook.on('mouseup', event => {
   if (event.button == '4') {
-    isTalking = false
     muteMic()
   }
 })
@@ -120,26 +106,24 @@ ioHook.on('mouseup', event => {
 ipcMain.on('asynchronous-message', (event, msg) => {
   if (msg === 'connected') {
     isConnected = true
-    isTalking = false
     muteMic()
   }
 
   if (msg === 'disconnected') {
     isConnected = false
-    isTalking = false
   }
 
   if (msg === 'self-muted') {
     console.log("self-muted")
-    isConnected = false
+    selfMute = true
   }
 
   if (msg === 'self-unmuted') {
     console.log("self-unmuted")
-    isConnected = true
+    selfMute = false
   }
 
   if (msg === 'DOMready') {
-      mainWindow.webContents.send('devMode', devMode)
+    mainWindow.webContents.send('devMode', devMode)
   }
 })
