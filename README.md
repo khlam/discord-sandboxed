@@ -25,7 +25,7 @@ webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
 webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 `
 
-to the [\<webview>](https://developer.chrome.com/apps/tags/webview), so you can use Discord without worrying about the client listening in on whatever else you're running.
+to the [\<webview>](https://developer.chrome.com/apps/tags/webview). This opens your microphone without giving the client window focus, so you can use Discord without worrying about the client listening in on whatever else you're running.
 
 ## What this Client Tries to Do
 Discord-Sandbox tries to isolate the Discord client within the Electron process, preventing it from watching keystrokes or processes it has no business in.
