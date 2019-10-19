@@ -80,26 +80,7 @@ onload = () => {
         if (e.message === "discord-load-complete") {
             webview.executeJavaScript(`
             document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();
-
-            const targetNode = document.getElementsByClassName("scroller-2FKFPG firefoxFixScrollFlex-cnI2ix systemPad-3UxEGl scroller-2TZvBN")[0]
-
-            const config = { attributes: true, childList: true, subtree: true };
             
-            const callback = function(mutationsList, observer) {
-                for(let mutation of mutationsList) {
-                    if (mutation.type === 'childList') {
-                        console.log('DOM changed');
-                    }
-                    else if (mutation.type === 'attributes') {
-                        console.log('DOM changed');
-                    }
-                }
-            };
-            
-            const observer = new MutationObserver(callback);
-            
-            observer.observe(targetNode, config);   
-
             `)
             removeBloat(webview)
         }
