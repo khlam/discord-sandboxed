@@ -4,7 +4,7 @@
 
 
 Are you worried Discord is watching what programs you have open or listening to your mic even while you're not pressing your push-to-talk key?
-Discord-Sandbox isolates the Discord from reading background processes by running the [Discord web client](https://discordapp.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
+Discord-Sandbox isolates the Discord client from reading background processes by running the [Discord web client](https://discordapp.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
 
 ## Enabling Push-to-Talk
 To enable push-to-talk, open Discord-Sandbox and set your push-to-talk key to `Backspace`. 
