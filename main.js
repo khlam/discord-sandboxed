@@ -73,26 +73,14 @@ app.on('activate', function () {
 let isTalking = false
 let isConnected = false
 
-function muteDelay() {
-  return new Promise((resolve) => {
-    setTimeout(function(){
-      return resolve(true)
-    }, 1300); // big fat push to talk delay .com
-  })
-}
-
 function muteMic() {
   if (isConnected === true) {
     return new Promise((resolve) => {
       if (isTalking === false) {
-        muteDelay().then(val => {
-          if (isTalking === false) {
-            console.log("Muted")
-            mainWindow.webContents.send('ping', 'mic-closed')
-            mainWindow.setTitle("MUTED")
-            return resolve(true)
-          }
-        })
+        console.log("Muted")
+        mainWindow.webContents.send('ping', 'mic-closed')
+        mainWindow.setTitle("MUTED")
+        return resolve(true)
       }
     })
   }
@@ -132,11 +120,23 @@ ioHook.on('mouseup', event => {
 ipcMain.on('asynchronous-message', (event, msg) => {
   if (msg === 'connected') {
     isConnected = true
+    isTalking = false
+    muteMic()
   }
 
   if (msg === 'disconnected') {
     isConnected = false
     isTalking = false
+  }
+
+  if (msg === 'self-muted') {
+    console.log("self-muted")
+    isConnected = false
+  }
+
+  if (msg === 'self-unmuted') {
+    console.log("self-unmuted")
+    isConnected = true
   }
 
   if (msg === 'DOMready') {

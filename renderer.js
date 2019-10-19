@@ -1,5 +1,12 @@
 const { remote, ipcRenderer } = require('electron')
 
+function removeBloat(webview) {
+    webview.executeJavaScript(`
+    document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();
+    document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();
+    `)
+}
+
 onload = () => {
     const webview = document.querySelector('webview')
 
@@ -16,7 +23,7 @@ onload = () => {
              }else {
                  console.log("waiting for load")
              }
-         }, 1500);
+         }, 500);
          `)
     });
 
@@ -32,12 +39,59 @@ onload = () => {
             ipcRenderer.send('asynchronous-message', 'disconnected')
         }
 
-        // Execute JS into the webview after login to remove the download button at the bottom of the server list.
+        if (e.message === "muted") {
+            console.log("Self Muted in Discord")
+            ipcRenderer.send('asynchronous-message', 'self-muted')
+        }
+
+        if (e.message === "unmuted") {
+            console.log("Self Muted in Discord")
+            ipcRenderer.send('asynchronous-message', 'self-unmuted')
+        }
+
+        if (e.message === "signalingState => stable, negotiation needed: false") {
+            console.log("Mute/Unmute")
+            removeBloat(webview)
+            webview.executeJavaScript(`
+            if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
+                console.log("muted")
+            }else {
+                console.log("unmuted")
+            }
+            `)
+        }
+
+        if (e.message === "DOM changed") {
+            removeBloat(webview)
+        }
+
+        // Execute JS into the webview after login
+        // Removes download button and help button
         if (e.message === "discord-load-complete") {
             webview.executeJavaScript(`
-                let a = document.getElementsByClassName("listItem-2P_4kh");
-                a[a.length-1].innerHTML = "";
+            document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();
+
+            const targetNode = document.getElementsByClassName("scroller-2FKFPG firefoxFixScrollFlex-cnI2ix systemPad-3UxEGl scroller-2TZvBN")[0]
+
+            const config = { attributes: true, childList: true, subtree: true };
+            
+            const callback = function(mutationsList, observer) {
+                for(let mutation of mutationsList) {
+                    if (mutation.type === 'childList') {
+                        console.log('DOM changed');
+                    }
+                    else if (mutation.type === 'attributes') {
+                        console.log('DOM changed');
+                    }
+                }
+            };
+            
+            const observer = new MutationObserver(callback);
+            
+            observer.observe(targetNode, config);   
+
             `)
+            removeBloat(webview)
         }
     })
 
@@ -55,9 +109,9 @@ onload = () => {
             console.log("not talking")
             webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
             webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-            document.getElementById("title-bar-status").style.backgroundColor = "#23272A"
-            document.getElementById("title-bar-controls").style.backgroundColor = "#23272A"
-            document.getElementById("title-bar").style.backgroundColor = "#23272A"
+            document.getElementById("title-bar-status").style.backgroundColor = "#212226"
+            document.getElementById("title-bar-controls").style.backgroundColor = "#212226"
+            document.getElementById("title-bar").style.backgroundColor = "#212226"
 
         }
     })
