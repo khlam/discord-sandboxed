@@ -45,7 +45,7 @@ Discord can still collect the following information. Since these are inherent to
 2. Clone Repo `git clone https://github.com/khlam/discord-sandboxed.git`
 3. Install dependencies `npm i && npm i -d`
 4. Run `npm start`
-5. (Extra Step) Create Windows installer `npm run package-win`
+5. (Optional) Create Windows installer `npm run package-win`
 
 
 
