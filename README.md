@@ -1,8 +1,9 @@
-# Discord-Sandbox
+# Discord-Sandbox <a href="https://github.com/khlam/discord-sandboxed/releases/latest"><img src="https://img.shields.io/badge/download-latest-green.svg"></a>
+
 > Open-sourced sandboxed Discord client for the privacy-minded. Say NO to intrusive data collection.
 
 
-Paranoid that Discord is watching what programs you have open or listening on your mic when you're not pressing your push-to-talk key? Discord-Sandbox isolates the Discord process from reading background processes by running the [Discord web client](https://discordapp.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
+Paranoid Discord is watching what programs you have open or listening on your mic when you're not pressing your push-to-talk key? Discord-Sandbox isolates the Discord process from reading background processes by running the [Discord web client](https://discordapp.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
 
 ## Enabling Push-to-Talk
 To enable push-to-talk, open Discord-Sandbox and set your push-to-talk key to `Backspace.` 
