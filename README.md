@@ -16,7 +16,7 @@ If you prefer push-to-talk, this gimping makes the web client almost unusable.
 
 Discord-Sandbox works around this issue and enables system-wide push-to-talk while respecting your privacy. 
 This is accomplished using a separate key-press detection library, [iohook](https://www.npmjs.com/package/iohook), and mediating its interaction with Discord.
-This separates your activity from Discord without compromising any usability.
+This separates your activity from Discord without compromising usability.
 
 When your push-to-talk key is held down, the renderer process will send a `backspace` key-down keycode,
 
