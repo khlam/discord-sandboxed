@@ -7,9 +7,6 @@ function muteMic(webview){
     console.log("not talking")
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-    document.getElementById("title-bar-status").style.backgroundColor = "#212226"
-    document.getElementById("title-bar-controls").style.backgroundColor = "#212226"
-    document.getElementById("title-bar").style.backgroundColor = "#212226"
 }
 
 onload = () => {
@@ -92,9 +89,6 @@ onload = () => {
                 console.log("talking")
                 webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
                 webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-                document.getElementById("title-bar-status").style.backgroundColor = "green"
-                document.getElementById("title-bar-controls").style.backgroundColor = "green"
-                document.getElementById("title-bar").style.backgroundColor = "green"
             }
 
             if (event.data.type === 'micClose'){
