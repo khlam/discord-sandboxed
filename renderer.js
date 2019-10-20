@@ -1,5 +1,3 @@
-const { remote, ipcRenderer } = require('electron')
-
 function removeBloat(webview) {
     webview.executeJavaScript(`document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();`) // Remove top-right help button
     webview.executeJavaScript(`document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();`) // Remove gift from chat
@@ -18,43 +16,41 @@ onload = () => {
     const webview = document.querySelector('webview')
     let muteTimeout = null
 
-    ipcRenderer.send('asynchronous-message', 'DOMready')
-    
-    // Execute JS into the webview to detect when logging in is complete
+    // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
-         webview.executeJavaScript(`
-         let dlButton = document.getElementsByClassName("listItem-2P_4kh");
-         t = setInterval(function(){
-             if(dlButton.length != 0) {
-                 console.log("discord-load-complete")
-                 clearInterval(t)
-             }else {
-                 console.log("waiting for load")
-             }
-         }, 500);
-         `)
-    });
+        webview.executeJavaScript(`
+        let dlButton = document.getElementsByClassName("listItem-2P_4kh");
+        t = setInterval(function(){
+            if(dlButton.length != 0) {
+                console.log("discord-load-complete")
+                clearInterval(t)
+            }else {
+                console.log("waiting for load")
+            }
+        }, 500);
+        `)
+   });
 
-
-    webview.addEventListener('console-message', (e) => {
+   // Send commands to preload.js
+   webview.addEventListener('console-message', (e) => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
-            ipcRenderer.send('asynchronous-message', 'connected')
+            window.postMessage({ type: "connected"}, "*")
         }
 
         if (e.message === "Close RTCPeerConnection") {
             console.log("Disconnected from server")
-            ipcRenderer.send('asynchronous-message', 'disconnected')
+            window.postMessage({ type: "disconnected"}, "*")
         }
 
         if (e.message === "muted") {
             console.log("Self Muted in Discord")
-            ipcRenderer.send('asynchronous-message', 'self-muted')
+            window.postMessage({ type: "self-muted"}, "*")
         }
 
         if (e.message === "unmuted") {
-            console.log("Self Muted in Discord")
-            ipcRenderer.send('asynchronous-message', 'self-unmuted')
+            console.log("Self Un-Muted in Discord")
+            window.postMessage({ type: "self-unmuted"}, "*")
         }
 
         if (e.message === "signalingState => stable, negotiation needed: false") {
@@ -81,36 +77,32 @@ onload = () => {
         }
     })
 
-    ipcRenderer.on('micOpen', (event, msg) => {
-        if (msg === 'mic-open'){
-            clearTimeout(muteTimeout) // Cancel mic-off incase of accidental double-tap
-            console.log("talking")
-            webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
-            webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-            document.getElementById("title-bar-status").style.backgroundColor = "green"
-            document.getElementById("title-bar-controls").style.backgroundColor = "green"
-            document.getElementById("title-bar").style.backgroundColor = "green"
-        }
-    })
+   // Accept commands from preload.js
+    window.addEventListener(
+        "message",
+        event => {
+          if (event.origin === "file://" && event.source === window) {
 
-    ipcRenderer.on('micClose', (event, msg) => {
-        if (msg === 'mic-closed'){
-            muteTimeout = setTimeout(() => muteMic(webview), 1000); // 1 second threshold incase of accidental double-click or release so the user doesn't cut-out
-        }
-    })
+            if (event.data.type === "devMode" && event.data.text === "true") {
+                webview.openDevTools()
+            }
 
-    ipcRenderer.on('devMode', (event, msg) => {
-        console.log(`Dev Mode: ${msg}`)
-        if (msg === true) {
-            webview.openDevTools()
-        }
-    })
+            if (event.data.type === 'micOpen'){
+                clearTimeout(muteTimeout) // Cancel mic-off incase of accidental double-tap
+                console.log("talking")
+                webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
+                webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+                document.getElementById("title-bar-status").style.backgroundColor = "green"
+                document.getElementById("title-bar-controls").style.backgroundColor = "green"
+                document.getElementById("title-bar").style.backgroundColor = "green"
+            }
+
+            if (event.data.type === 'micClose'){
+                muteTimeout = setTimeout(() => muteMic(webview), 1000); // 1 second threshold incase of accidental double-click or release so the user doesn't cut-out
+            }
+
+          }
+        },
+        false
+    )
 }
-
-document.getElementById('minimize-button').addEventListener('click', () => {
-    remote.getCurrentWindow().minimize()
-  })
-  
-document.getElementById('close-button').addEventListener('click', () => {
-    remote.app.quit()
-})

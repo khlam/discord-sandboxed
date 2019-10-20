@@ -2,21 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <!--style-src 'self' 'unsafe-inline' needs evaluation, some conflict with node_modules\electron\dist\resources\electron.asar\renderer\web-view\web-view-impl.js-->
+    <meta http-equiv="Content-Security-Policy" content="default-src none; script-src 'self'; style-src 'self' 'unsafe-inline'">
     <link type="text/css" rel="stylesheet" href="./css/style.css">
   </head>
   <body>
     
-    <div id="title-bar" class="title-bar">
-      <div id='title-bar-status' class="status">
-      </div>
-      <div id='title-bar-controls' class="window-controls-container">
-        <button id="minimize-button" class="minimize-button"> - </button>
-        <button id="close-button" class="close-button"> x </button>
-      </div>
-    </div>
-
-    <!--Note that running in electron is already a chromium sandbox. Discord can no longer peek at a user's clipboard.-->
-    <webview id="discord" webpreferences="plugins=false, webgl=false, enableRemoteModule=false, sandbox=true, useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" src="https://discordapp.com/login"></webview>
+    <!-- https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module -->
+    <webview id="discord" enableremotemodule="false" webpreferences="useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" src="https://discordapp.com/login"></webview>
 
     <script src="./renderer.js"></script>
   </body>

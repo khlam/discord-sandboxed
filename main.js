@@ -1,7 +1,8 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain} = require('electron')
+const { app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const ioHook = require('iohook')
+const URL = require('url').URL
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,15 +14,17 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1230,
-    height: 730,
+    height: 800,
     icon: './assets/icon.ico',
-    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
+      nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
+      enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
       webviewTag: true
     }
   })
+
+  // Set Dev mode
   if (process.argv.length === 3) {
     if (process.argv[2] === 'dev'){
       devMode = true
@@ -65,18 +68,46 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+/* Security Stuff */
+// https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
+app.on('web-contents-created', (event, contents) => {
+  contents.on('will-attach-webview', (event, webPreferences, params) => {
+    // Strip away preload scripts if unused or verify their location is legitimate
+    delete webPreferences.preload
+    delete webPreferences.preloadURL
+
+    // Disable Node.js integration
+    webPreferences.nodeIntegration = false
+
+    // Verify discordapp.com is being loaded
+    if (!params.src.startsWith('https://discordapp.com/')) {
+      event.preventDefault()
+    }
+  })
+})
+
+// https://electronjs.org/docs/tutorial/security#12-disable-or-limit-navigation
+app.on('web-contents-created', (event, contents) => {
+  contents.on('will-navigate', (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl)
+
+    if (parsedUrl.origin !== 'https://discordapp.com/') { // Limit navigation to discordapp.com; not really relevant
+      event.preventDefault()
+    }
+  })
+})
+
+// https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
+app.on('web-contents-created', (event, contents) => {
+  contents.on('new-window', async (event, navigationUrl) => {
+    event.preventDefault() // External links just don't open
+  })
+})
+/*  ----  */
 
 'use strict';
 let selfMute = false
 let isConnected = false
-
-function muteMic() {
-  console.log("Muted")
-  mainWindow.webContents.send('micClose', 'mic-closed')
-  mainWindow.setTitle("MUTED")
-}
 
 function unmuteMic() {
   if (isConnected === true && selfMute === false) {
@@ -84,6 +115,12 @@ function unmuteMic() {
     mainWindow.webContents.send('micOpen', 'mic-open')
     mainWindow.setTitle("MIC OPEN")
   }
+}
+
+function muteMic() {
+  console.log("Muted")
+  mainWindow.webContents.send('micClose', 'mic-closed')
+  mainWindow.setTitle("MUTED")
 }
 
 app.on('ready', event => {
@@ -105,21 +142,23 @@ ioHook.on('mouseup', event => {
 
 ipcMain.on('asynchronous-message', (event, msg) => {
   if (msg === 'connected') {
+    console.log("User connected to Discord VOIP server")
     isConnected = true
     muteMic()
   }
 
   if (msg === 'disconnected') {
+    console.log("User disconnected to Discord VOIP server")
     isConnected = false
   }
 
   if (msg === 'self-muted') {
-    console.log("self-muted")
+    console.log("User self-muted")
     selfMute = true
   }
 
   if (msg === 'self-unmuted') {
-    console.log("self-unmuted")
+    console.log("User self-unmuted")
     selfMute = false
   }
 
