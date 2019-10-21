@@ -20,6 +20,7 @@ function createWindow () {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
       enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
+      partition: 'persist:discord', // Kind of weird to me that you can grab the shared partition from main
       webviewTag: true
     }
   })
@@ -48,6 +49,7 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
 }
 
 // This method will be called when Electron has finished
@@ -108,6 +110,23 @@ app.on('web-contents-created', (event, contents) => {
 'use strict';
 let selfMute = false
 let isConnected = false
+let webViewSession = null
+
+app.on('ready', () => {
+  // Handle permission requests
+  webViewSession = mainWindow.webContents.session
+  webViewSession.setPermissionRequestHandler((webContents, permission, callback) => { // deny all permissions
+      const url = webContents.getURL()
+      if (url.startsWith('https://discordapp.com/')) {
+        if (permission === 'media' && isConnected === true) {
+          console.log("User connected to Discord VOIP server. Granted permission for microphone")
+          return callback(true)
+        }
+      }
+      console.log("Denied permission: ", permission)
+      return callback(false)
+  })
+})
 
 function unmuteMic() {
   if (isConnected === true && selfMute === false) {

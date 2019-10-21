@@ -1,10 +1,11 @@
 const { ipcRenderer } = require('electron')
 
+
+// Send commands from main to renderer
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.send('asynchronous-message', 'DOMready')
 })
 
-// Send commands from main to renderer
 ipcRenderer.on('devMode', (event, msg) => {
   console.log(`Dev Mode: ${msg}`)
   window.postMessage({ type: "devMode", text: `${msg}` }, "*")
@@ -39,7 +40,6 @@ window.addEventListener(
       if (event.data.type === 'self-unmuted'){
         ipcRenderer.send('asynchronous-message', 'self-unmuted')
       }
-
     }
   },
   false

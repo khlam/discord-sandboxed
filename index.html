@@ -9,7 +9,7 @@
   <body>
     
     <!-- https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module -->
-    <webview id="discord" enableremotemodule="false" webpreferences="useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" src="https://discordapp.com/login"></webview>
+    <webview id="discord" enableremotemodule="false" webpreferences="useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" partition="persist:discord" src="https://discordapp.com/login"></webview>
 
     <script src="./renderer.js"></script>
   </body>

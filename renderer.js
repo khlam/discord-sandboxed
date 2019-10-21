@@ -1,6 +1,9 @@
 function removeBloat(webview) {
+    console.log("removing bloat")
     webview.executeJavaScript(`document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();`) // Remove top-right help button
     webview.executeJavaScript(`document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();`) // Remove gift from chat
+    webview.executeJavaScript(`document.getElementsByClassName("noticeDefault-362Ko2 notice-2FJMB4 size14-3iUx6q height36-36OHCc")[document.getElementsByClassName("noticeDefault-362Ko2 notice-2FJMB4 size14-3iUx6q height36-36OHCc").length - 1].remove();`) // Remove "get push to talk" top notification
+    webview.executeJavaScript(`document.getElementsByClassName("channelNotice-1-XFjC invite-OjTXrW")[document.getElementsByClassName("channelNotice-1-XFjC invite-OjTXrW").length - 1].remove();`) // Remove "invite people" notification
 }
 
 function muteMic(webview){
@@ -32,6 +35,7 @@ onload = () => {
    webview.addEventListener('console-message', (e) => {
         if (e.message === "Constructed RTCPeerConnection") {
             console.log("Connected to server")
+            removeBloat(webview)
             window.postMessage({ type: "connected"}, "*")
         }
 
@@ -42,11 +46,13 @@ onload = () => {
 
         if (e.message === "muted") {
             console.log("Self Muted in Discord")
+            removeBloat(webview)
             window.postMessage({ type: "self-muted"}, "*")
         }
 
         if (e.message === "unmuted") {
             console.log("Self Un-Muted in Discord")
+            removeBloat(webview)
             window.postMessage({ type: "self-unmuted"}, "*")
         }
 
