@@ -102,7 +102,7 @@ app.on('web-contents-created', (event, contents) => {
 // https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
 app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', async (event, navigationUrl) => {
-    event.preventDefault() // External links just don't open
+    event.preventDefault() // Prevents external links from opening
   })
 })
 /*  ----  */
@@ -118,7 +118,7 @@ app.on('ready', () => {
   webViewSession.setPermissionRequestHandler((webContents, permission, callback) => { // deny all permissions
       const url = webContents.getURL()
       if (url.startsWith('https://discordapp.com/')) {
-        if (permission === 'media' && isConnected === true) {
+        if (permission === 'media' && isConnected === true) { // if user is connected to Discord voice then enable microphone
           console.log("User connected to Discord VOIP server. Granted permission for microphone")
           return callback(true)
         }
@@ -173,6 +173,7 @@ ipcMain.on('asynchronous-message', (event, msg) => {
 
   if (msg === 'self-muted') {
     console.log("User self-muted")
+    webViewSession.setPermissionRequestHandler(null)
     selfMute = true
   }
 

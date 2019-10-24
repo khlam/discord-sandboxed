@@ -1,15 +1,66 @@
 function removeBloat(webview) {
-    console.log("removing bloat")
-    webview.executeJavaScript(`document.getElementsByClassName("anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB")[0].remove();`) // Remove top-right help button
-    webview.executeJavaScript(`document.getElementsByClassName("contents-18-Yxp button-3AYNKb button-2vd_v_")[0].remove();`) // Remove gift from chat
-    webview.executeJavaScript(`document.getElementsByClassName("noticeDefault-362Ko2 notice-2FJMB4 size14-3iUx6q height36-36OHCc")[document.getElementsByClassName("noticeDefault-362Ko2 notice-2FJMB4 size14-3iUx6q height36-36OHCc").length - 1].remove();`) // Remove "get push to talk" top notification
-    webview.executeJavaScript(`document.getElementsByClassName("channelNotice-1-XFjC invite-OjTXrW")[document.getElementsByClassName("channelNotice-1-XFjC invite-OjTXrW").length - 1].remove();`) // Remove "invite people" notification
+    bloatList = [
+        'anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB', // Remove top-right help button
+        'contents-18-Yxp button-3AYNKb button-2vd_v_', // Remove gift and GIF from chat
+        'noticeDefault-362Ko2',
+        'channelNotice-1-XFjC',
+    ]
+    bloatList.forEach(function(tag){
+        webview.executeJavaScript(`
+        console.log("Checking for bloat tag: ${tag}")
+        if (document.getElementsByClassName("${tag}").length !== 0){
+            document.getElementsByClassName("${tag}")[document.getElementsByClassName("${tag}").length - 1].remove();
+            console.log("Removed bloat tag: ${tag}")
+        }
+        `)
+      })
 }
 
 function muteMic(webview){
     console.log("not talking")
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+}
+
+// Creates an observer for user list to detect if server is switched
+function userListChangeListener(webview) {
+    webview.executeJavaScript(`
+    const userList = document.getElementsByClassName("sidebar-2K8pFh")[0]
+    const userListconfig = { attributes: false, childList: true, subtree: true, characterData: false };
+    
+    const userListChangeCallback = function(mutationsList, observer) {
+        console.log('--user list changed');
+
+        if (document.getElementsByClassName("container-1giJp5").length !== 0){
+            console.log('--user has connected to discord voice server')
+        }else {
+            console.log('--user has disconnected to discord voice server')
+        }
+
+    };
+    const userListObserver = new MutationObserver(userListChangeCallback);
+    userListObserver.observe(userList, userListconfig);
+    `)
+}
+
+function userMuteDeafenListener(webview) {
+    webview.executeJavaScript(`
+    const userMuteDeafen = document.getElementsByClassName("container-3baos1")[0]
+    const userMuteDeafenconfig = { attributes: false, childList: true, subtree: true, characterData: false };
+    
+    const userMuteDeafencallback = function(mutationsList, observer) {
+        console.log('--user mute deafen changed');
+        
+        if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
+            console.log("muted")
+        }else {
+            console.log("unmuted")
+        }
+
+    };
+    const userMuteDeafenObserver = new MutationObserver(userMuteDeafencallback);
+    userMuteDeafenObserver.observe(userMuteDeafen, userMuteDeafenconfig);
+    `)
 }
 
 onload = () => {
@@ -22,7 +73,7 @@ onload = () => {
         let dlButton = document.getElementsByClassName("listItem-2P_4kh");
         t = setInterval(function(){
             if(dlButton.length != 0) {
-                console.log("discord-load-complete")
+                console.log("--discord-load-complete")
                 clearInterval(t)
             }else {
                 console.log("waiting for load")
@@ -33,50 +84,37 @@ onload = () => {
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
-        if (e.message === "Constructed RTCPeerConnection") {
+        if (e.message === "--user has connected to discord voice server") {
             console.log("Connected to server")
             removeBloat(webview)
             window.postMessage({ type: "connected"}, "*")
         }
 
-        if (e.message === "Close RTCPeerConnection") {
+        if (e.message === "--user has disconnected to discord voice server") {
             console.log("Disconnected from server")
             window.postMessage({ type: "disconnected"}, "*")
         }
 
+        if (e.message === '--user list changed') {
+            removeBloat(webview)
+        }
+
         if (e.message === "muted") {
             console.log("Self Muted in Discord")
-            removeBloat(webview)
             window.postMessage({ type: "self-muted"}, "*")
         }
 
         if (e.message === "unmuted") {
             console.log("Self Un-Muted in Discord")
-            removeBloat(webview)
             window.postMessage({ type: "self-unmuted"}, "*")
         }
 
-        if (e.message === "signalingState => stable, negotiation needed: false") {
-            console.log("Mute/Unmute")
-            removeBloat(webview)
-            webview.executeJavaScript(`
-            if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
-                console.log("muted")
-            }else {
-                console.log("unmuted")
-            }
-            `)
-        }
-
-        // To be finished
-        if (e.message === "DOM changed") {
-            removeBloat(webview)
-        }
-
         // Execute JS into the webview after login
-        if (e.message === "discord-load-complete") {
+        if (e.message === "--discord-load-complete") {
             webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button
             removeBloat(webview)
+            userListChangeListener(webview)
+            userMuteDeafenListener(webview)
         }
     })
 
@@ -98,7 +136,7 @@ onload = () => {
             }
 
             if (event.data.type === 'micClose'){
-                muteTimeout = setTimeout(() => muteMic(webview), 1000); // 1 second threshold incase of accidental double-click or release so the user doesn't cut-out
+                muteTimeout = setTimeout(() => muteMic(webview), 1500); // incase accidental double-click or release so the user doesn't cut-out
             }
 
           }
