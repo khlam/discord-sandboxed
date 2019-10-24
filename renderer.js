@@ -1,4 +1,5 @@
 function removeBloat(webview) {
+    console.log("Removing bloat")
     bloatList = [
         'anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB', // Remove top-right help button
         'contents-18-Yxp button-3AYNKb button-2vd_v_', // Remove gift and GIF from chat
@@ -7,10 +8,8 @@ function removeBloat(webview) {
     ]
     bloatList.forEach(function(tag){
         webview.executeJavaScript(`
-        console.log("Checking for bloat tag: ${tag}")
         if (document.getElementsByClassName("${tag}").length !== 0){
             document.getElementsByClassName("${tag}")[document.getElementsByClassName("${tag}").length - 1].remove();
-            console.log("Removed bloat tag: ${tag}")
         }
         `)
       })
