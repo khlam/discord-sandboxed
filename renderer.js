@@ -1,8 +1,7 @@
 function removeBloat(webview) {
     console.log("Removing bloat")
     bloatList = [
-        'anchor-3Z-8Bb anchorUnderlineOnHover-2ESHQB', // Remove top-right help button
-        'contents-18-Yxp button-3AYNKb button-2vd_v_', // Remove gift and GIF from chat
+        'buttons-205you', // remove buttons from chat box (Gift, GIF, and Emojis)
         'noticeDefault-362Ko2',
         'channelNotice-1-XFjC',
     ]
@@ -48,14 +47,7 @@ function userMuteDeafenListener(webview) {
     const userMuteDeafenconfig = { attributes: false, childList: true, subtree: true, characterData: false };
     
     const userMuteDeafencallback = function(mutationsList, observer) {
-        console.log('--user mute deafen changed');
-        
-        if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
-            console.log("muted")
-        }else {
-            console.log("unmuted")
-        }
-
+        isMicMuted()
     };
     const userMuteDeafenObserver = new MutationObserver(userMuteDeafencallback);
     userMuteDeafenObserver.observe(userMuteDeafen, userMuteDeafenconfig);
@@ -74,12 +66,24 @@ onload = () => {
             if(dlButton.length != 0) {
                 console.log("--discord-load-complete")
                 clearInterval(t)
+                isMicMuted()
             }else {
                 console.log("waiting for load")
             }
         }, 500);
         `)
-   });
+    
+    // Insert a function that will be called later
+    webview.executeJavaScript(`
+        function isMicMuted() {
+            if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
+                console.log("muted")
+            }else {
+                console.log("unmuted")
+            }
+        }
+        `)
+    });
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
@@ -110,8 +114,8 @@ onload = () => {
 
         // Execute JS into the webview after login
         if (e.message === "--discord-load-complete") {
-            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button
-            removeBloat(webview)
+            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button            
+            //removeBloat(webview)
             userListChangeListener(webview)
             userMuteDeafenListener(webview)
         }
@@ -135,7 +139,7 @@ onload = () => {
             }
 
             if (event.data.type === 'micClose'){
-                muteTimeout = setTimeout(() => muteMic(webview), 1500); // incase accidental double-click or release so the user doesn't cut-out
+                muteTimeout = setTimeout(() => muteMic(webview), 1200); // incase accidental double-click or release so the user doesn't cut-out
             }
 
           }

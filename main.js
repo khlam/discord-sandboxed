@@ -137,9 +137,11 @@ function unmuteMic() {
 }
 
 function muteMic() {
-  console.log("Muted")
-  mainWindow.webContents.send('micClose', 'mic-closed')
-  mainWindow.setTitle("MUTED")
+  if (isConnected === true && selfMute === false) {
+    console.log("Muted")
+    mainWindow.webContents.send('micClose', 'mic-closed')
+    mainWindow.setTitle("MUTED")
+  }
 }
 
 app.on('ready', event => {
