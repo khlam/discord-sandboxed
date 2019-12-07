@@ -99,7 +99,7 @@ onload = () => {
         }
 
         if (e.message === '--user list changed') {
-            removeBloat(webview)
+            //removeBloat(webview)
         }
 
         if (e.message === "muted") {
