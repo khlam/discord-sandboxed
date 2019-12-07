@@ -1,3 +1,5 @@
+> Don't use this yet. For educational purposes only.
+
 # Discord-Sandbox <a href="https://github.com/khlam/discord-sandboxed/releases/latest"><img src="https://img.shields.io/badge/download-latest-green.svg"></a>
 
 > Open-sourced Sandboxed Discord client for the privacy-minded. Say NO to intrusive data collection.
@@ -29,7 +31,7 @@ to the [\<webview>](https://developer.chrome.com/apps/tags/webview). This opens 
 
 ## What this Client Tries to Do
 Discord-Sandbox tries to isolate the Discord client within the Electron process, preventing it from watching keystrokes or processes it has no business in.
-While users may consent to data collection in Discord's TOS, information such as keystrokes to set your idle status or background applications that have nothing to do with Discord are still being monitored by the [Discord Client](https://discordapp.com/download).
+While users may consent to data collection in Discord's TOS, information such as keystrokes to set your idle status or background applications that have nothing to do with Discord are still being monitored by the Discord client.
 
 ## What this Client Cannot Do
 Discord still has the ability to collect a lot of user-behavior information.
