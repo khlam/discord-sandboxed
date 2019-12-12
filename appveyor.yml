@@ -19,7 +19,6 @@ branches:
   matrix:
     fast_finish: true
   build_script:
-    - npm run build
     - npm run package-win
   after_build:
   - ps: 7z a DiscordSandbox-$env:package_version-$env:rel_type-win32x64.zip $env:APPVEYOR_BUILD_FOLDER\release\*.exe $env:APPVEYOR_BUILD_FOLDER\README.md $env:APPVEYOR_BUILD_FOLDER\LICENSE.md
