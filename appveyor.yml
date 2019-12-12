@@ -1,39 +1,39 @@
 branches:
-    only:
-      - master
-      - dev
-  skip_tags: true
-  cache:
-    - node_modules
-  environment:
-    matrix:
-      - nodejs_version: 8
-  install:
-    - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
-    - ps: Install-Product node $env:nodejs_version
-    - ps: If ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:toggle_prerelease="false"; $env:rel_type="stable"} Else {$env:toggle_prerelease="true"; $env:rel_type="nightly"}
-    - set CI=true
-    - npm install -g npm@latest
-    - set PATH=%APPDATA%\npm;%PATH%
-    - npm install
+  only:
+    - master
+    - dev
+skip_tags: true
+cache:
+  - node_modules
+environment:
   matrix:
-    fast_finish: true
-  build_script:
-    - npm run package-win
-  after_build:
-  - ps: 7z a DiscordSandbox-$env:package_version-$env:rel_type-win32x64.zip $env:APPVEYOR_BUILD_FOLDER\release\*.exe $env:APPVEYOR_BUILD_FOLDER\README.md $env:APPVEYOR_BUILD_FOLDER\LICENSE.md
-  artifacts:
-  - path: DiscordSandbox-$(package_version)-$(rel_type)-win32x64.zip
-    name: DiscordSandbox-$(package_version)-$(rel_type)-win32x64
-  shallow_clone: true
-  clone_depth: 1
-  deploy:
-  - provider: GitHub
-    release: $(package_version)-$(rel_type)
-    prerelease: $(toggle_prerelease)
-    description: Automatically built from branch `$(APPVEYOR_REPO_BRANCH)`, AppVeyor build `$(APPVEYOR_BUILD_VERSION)`</br></br>$(APPVEYOR_REPO_COMMIT_MESSAGE)
-    auth_token:
-      secure: JPLPY6cHS8ydAPy2lc49ym1aBGk5uUStEAKfEQuVqdB2Jl9X/sfWdu4MVagLff1D
-    artifact: DiscordSandbox-$(package_version)-$(rel_type)-win32x64.zip
-    on:
-      branch: $(APPVEYOR_REPO_BRANCH)
+    - nodejs_version: 8
+install:
+  - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
+  - ps: Install-Product node $env:nodejs_version
+  - ps: If ($env:APPVEYOR_REPO_BRANCH -eq "master") { $env:toggle_prerelease="false"; $env:rel_type="stable"} Else {$env:toggle_prerelease="true"; $env:rel_type="nightly"}
+  - set CI=true
+  - npm install -g npm@latest
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm install
+matrix:
+  fast_finish: true
+build_script:
+  - npm run package-win
+after_build:
+- ps: 7z a DiscordSandbox-$env:package_version-$env:rel_type-win32x64.zip $env:APPVEYOR_BUILD_FOLDER\release\*.exe $env:APPVEYOR_BUILD_FOLDER\README.md $env:APPVEYOR_BUILD_FOLDER\LICENSE.md
+artifacts:
+- path: DiscordSandbox-$(package_version)-$(rel_type)-win32x64.zip
+  name: DiscordSandbox-$(package_version)-$(rel_type)-win32x64
+shallow_clone: true
+clone_depth: 1
+deploy:
+- provider: GitHub
+  release: $(package_version)-$(rel_type)
+  prerelease: $(toggle_prerelease)
+  description: Automatically built from branch `$(APPVEYOR_REPO_BRANCH)`, AppVeyor build `$(APPVEYOR_BUILD_VERSION)`</br></br>$(APPVEYOR_REPO_COMMIT_MESSAGE)
+  auth_token:
+    secure: JPLPY6cHS8ydAPy2lc49ym1aBGk5uUStEAKfEQuVqdB2Jl9X/sfWdu4MVagLff1D
+  artifact: DiscordSandbox-$(package_version)-$(rel_type)-win32x64.zip
+  on:
+    branch: $(APPVEYOR_REPO_BRANCH)
