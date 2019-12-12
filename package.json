@@ -1,7 +1,7 @@
 {
   "name": "discordsandbox",
   "version": "0.1.0",
-  "description": "Discord Sandboxed with Push-to-Talk",
+  "description": "Discord Sandboxed",
   "main": "main.js",
   "scripts": {
     "start": "electron . dev",
