@@ -1,6 +1,6 @@
 {
   "name": "discordsandbox",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Discord Sandboxed with Push-to-Talk",
   "main": "main.js",
   "scripts": {
