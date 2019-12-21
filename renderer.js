@@ -1,4 +1,3 @@
-let isMicOpen = false
 function removeBloat(webview) {
     console.log("Removing bloat")
     bloatList = [
@@ -16,17 +15,13 @@ function removeBloat(webview) {
 }
 
 function openMic(webview){  
-    if (isMicOpen === false) {
-        isMicOpen = true
-        console.log("talking")
-        webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
-        webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
-    }
+    console.log("talking")
+    webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
+    webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
 
 function muteMic(webview){
     console.log("not talking")
-    isMicOpen = false
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
@@ -40,7 +35,7 @@ function userListChangeListener(webview) {
     const userListChangeCallback = function(mutationsList, observer) {
         console.log('--user list changed');
 
-        if (document.getElementsByClassName("container-1giJp5").length !== 0){
+        if (document.getElementsByClassName("container-1giJp5").length === 1){
             console.log('--user has connected to discord voice server')
         }else {
             console.log('--user has disconnected to discord voice server')
@@ -109,10 +104,6 @@ onload = () => {
             window.postMessage({ type: "disconnected"}, "*")
         }
 
-        if (e.message === '--user list changed') {
-            //removeBloat(webview)
-        }
-
         if (e.message === "muted") {
             console.log("Self Muted in Discord")
             window.postMessage({ type: "self-muted"}, "*")
@@ -126,7 +117,6 @@ onload = () => {
         // Execute JS into the webview after login
         if (e.message === "--discord-load-complete") {
             webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button            
-            //removeBloat(webview)
             userListChangeListener(webview)
             userMuteDeafenListener(webview)
         }
@@ -143,12 +133,13 @@ onload = () => {
             }
 
             if (event.data.type === 'micOpen'){
-                clearTimeout(muteTimeout) // Cancel mic-off incase of accidental double-tap
                 openMic(webview)
+                window.postMessage({ type: "confirmMicOpen"}, "*")
             }
 
             if (event.data.type === 'micClose'){
-                muteTimeout = setTimeout(() => muteMic(webview), 900); // incase accidental double-click or release so the user doesn't cut-out
+                muteMic(webview)
+                window.postMessage({ type: "confirmMicClose"}, "*")
             }
 
           }

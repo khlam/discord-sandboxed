@@ -111,6 +111,8 @@ app.on('web-contents-created', (event, contents) => {
 let selfMute = false
 let isConnected = false
 let webViewSession = null
+let isTalking = false
+let muteTimeout = null
 
 app.on('ready', () => {
   // Handle permission requests
@@ -129,7 +131,8 @@ app.on('ready', () => {
 })
 
 function unmuteMic() {
-  if (isConnected === true && selfMute === false) {
+  if ( selfMute === false ){
+    isTalking = true
     console.log("Talking")
     mainWindow.webContents.send('micOpen', 'mic-open')
     mainWindow.setTitle("MIC OPEN")
@@ -137,8 +140,8 @@ function unmuteMic() {
 }
 
 function muteMic() {
-  if (isConnected === true && selfMute === false) {
-    console.log("Muted")
+  if (selfMute === false) {
+    console.log("Not Talking")
     mainWindow.webContents.send('micClose', 'mic-closed')
     mainWindow.setTitle("MUTED")
   }
@@ -151,13 +154,17 @@ app.on('ready', event => {
 
 ioHook.on('mousedown', event => {
   if (event.button == '4') {
+    clearTimeout(muteTimeout)
     unmuteMic()
   }
 })
 
 ioHook.on('mouseup', event => {
   if (event.button == '4') {
-    muteMic()
+    if (isTalking === true) {
+      isTalking = false
+      muteTimeout = setTimeout(() => muteMic(), 1000)
+    }
   }
 })
 
@@ -165,7 +172,6 @@ ipcMain.on('asynchronous-message', (event, msg) => {
   if (msg === 'connected') {
     console.log("User connected to Discord VOIP server")
     isConnected = true
-    muteMic()
   }
 
   if (msg === 'disconnected') {
@@ -186,5 +192,12 @@ ipcMain.on('asynchronous-message', (event, msg) => {
 
   if (msg === 'DOMready') {
     mainWindow.webContents.send('devMode', devMode)
+  }
+
+  if (msg === 'confirmMicClose') {
+    if (isTalking === true) {
+      console.log("Mic desync. Opening Mic.")
+      unmuteMic()
+    }
   }
 })

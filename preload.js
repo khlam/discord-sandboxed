@@ -40,6 +40,14 @@ window.addEventListener(
       if (event.data.type === 'self-unmuted'){
         ipcRenderer.send('asynchronous-message', 'self-unmuted')
       }
+
+      if (event.data.type === 'confirmMicOpen'){
+        ipcRenderer.send('asynchronous-message', 'confirmMicOpen')
+      }
+
+      if (event.data.type === 'confirmMicClose'){
+        ipcRenderer.send('asynchronous-message', 'confirmMicClose')
+      }
     }
   },
   false
