@@ -20,7 +20,7 @@ function createWindow () {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
       enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
-      partition: 'persist:discord', // Kind of weird to me that you can grab the shared partition from main
+      partition: 'persist:discord',
       webviewTag: true
     }
   })

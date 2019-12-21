@@ -1,3 +1,4 @@
+let isMicOpen = false
 function removeBloat(webview) {
     console.log("Removing bloat")
     bloatList = [
@@ -14,8 +15,18 @@ function removeBloat(webview) {
       })
 }
 
+function openMic(webview){  
+    if (isMicOpen === false) {
+        isMicOpen = true
+        console.log("talking")
+        webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
+        webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+    }
+}
+
 function muteMic(webview){
     console.log("not talking")
+    isMicOpen = false
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
@@ -133,13 +144,11 @@ onload = () => {
 
             if (event.data.type === 'micOpen'){
                 clearTimeout(muteTimeout) // Cancel mic-off incase of accidental double-tap
-                console.log("talking")
-                webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
-                webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+                openMic(webview)
             }
 
             if (event.data.type === 'micClose'){
-                muteTimeout = setTimeout(() => muteMic(webview), 1200); // incase accidental double-click or release so the user doesn't cut-out
+                muteTimeout = setTimeout(() => muteMic(webview), 900); // incase accidental double-click or release so the user doesn't cut-out
             }
 
           }
