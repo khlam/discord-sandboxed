@@ -19,3 +19,16 @@ webview {
 ::-webkit-scrollbar {
     display: none;
 }
+
+#overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color:RGBA(0, 255, 0, .3);
+    z-index: 2;
+}

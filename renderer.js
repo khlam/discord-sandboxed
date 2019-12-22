@@ -16,12 +16,14 @@ function removeBloat(webview) {
 
 function openMic(webview){  
     console.log("talking")
+    document.getElementById("overlay").style.display = "block";
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
 
 function muteMic(webview){
     console.log("not talking")
+    document.getElementById("overlay").style.display = "none";
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
@@ -61,6 +63,7 @@ function userMuteDeafenListener(webview) {
 }
 
 onload = () => {
+    document.getElementById("overlay").style.display = "none";
     const webview = document.querySelector('webview')
     let muteTimeout = null
 
