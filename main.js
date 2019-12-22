@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain} = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const { initConfig } = require('./src/config')
 const path = require('path')
 const ioHook = require('iohook')
@@ -84,8 +84,8 @@ app.on('activate', function () {
 })
 
 /* Security Stuff */
-// https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
-app.on('web-contents-created', (event, contents) => {
+
+app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
   contents.on('will-attach-webview', (event, webPreferences, params) => {
     // Strip away preload scripts if unused or verify their location is legitimate
     delete webPreferences.preload
@@ -101,8 +101,7 @@ app.on('web-contents-created', (event, contents) => {
   })
 })
 
-// https://electronjs.org/docs/tutorial/security#12-disable-or-limit-navigation
-app.on('web-contents-created', (event, contents) => {
+app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#12-disable-or-limit-navigation
   contents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
 
@@ -112,8 +111,7 @@ app.on('web-contents-created', (event, contents) => {
   })
 })
 
-// https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
-app.on('web-contents-created', (event, contents) => {
+app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
   contents.on('new-window', async (event, navigationUrl) => {
     event.preventDefault() // Prevents external links from opening
   })
@@ -164,7 +162,7 @@ ipcMain.on('asynchronous-message', (event, msg) => {
 
   if (msg === 'confirmMicClose') {
     if (isTalking === true) {
-      console.log("Mic desync. Opening Mic.")
+      console.log("Mic state desync. Opening Mic.")
       unmuteMic()
     }
   }
@@ -172,6 +170,7 @@ ipcMain.on('asynchronous-message', (event, msg) => {
 
 app.on('ready', event => {
   ioHook.start();
+
   console.log(`Dev Mode: ${devMode}`)
 
   initConfig()
