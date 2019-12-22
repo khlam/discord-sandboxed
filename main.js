@@ -1,14 +1,36 @@
-// Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain} = require('electron')
+const { initConfig } = require('./src/config')
 const path = require('path')
 const ioHook = require('iohook')
 const URL = require('url').URL
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+'use strict';
 
+let mainWindow
 let devMode = false
+let selfMute = false
+let isConnected = false
+let webViewSession = null
+let isTalking = false
+let muteTimeout = null
+let configObj
+
+function unmuteMic() {
+  if ( selfMute === false ){
+    isTalking = true
+    console.log("Talking")
+    mainWindow.webContents.send('micOpen', 'mic-open')
+    mainWindow.setTitle("MIC OPEN")
+  }
+}
+
+function muteMic() {
+  if (selfMute === false) {
+    console.log("Not Talking")
+    mainWindow.webContents.send('micClose', 'mic-closed')
+    mainWindow.setTitle("MUTED")
+  }
+}
 
 function createWindow () {
   // Create the browser window.
@@ -35,21 +57,12 @@ function createWindow () {
   if (devMode === false){
     mainWindow.setMenu(null)
   }
-  
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.loadFile('index.html') // and load the index.html of the app.
 
-  // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null
   })
-
 }
 
 // This method will be called when Electron has finished
@@ -107,13 +120,6 @@ app.on('web-contents-created', (event, contents) => {
 })
 /*  ----  */
 
-'use strict';
-let selfMute = false
-let isConnected = false
-let webViewSession = null
-let isTalking = false
-let muteTimeout = null
-
 app.on('ready', () => {
   // Handle permission requests
   webViewSession = mainWindow.webContents.session
@@ -128,44 +134,6 @@ app.on('ready', () => {
       console.log("Denied permission: ", permission)
       return callback(false)
   })
-})
-
-function unmuteMic() {
-  if ( selfMute === false ){
-    isTalking = true
-    console.log("Talking")
-    mainWindow.webContents.send('micOpen', 'mic-open')
-    mainWindow.setTitle("MIC OPEN")
-  }
-}
-
-function muteMic() {
-  if (selfMute === false) {
-    console.log("Not Talking")
-    mainWindow.webContents.send('micClose', 'mic-closed')
-    mainWindow.setTitle("MUTED")
-  }
-}
-
-app.on('ready', event => {
-  ioHook.start();
-  console.log(`Dev Mode: ${devMode}`)
-})
-
-ioHook.on('mousedown', event => {
-  if (event.button == '4') {
-    clearTimeout(muteTimeout)
-    unmuteMic()
-  }
-})
-
-ioHook.on('mouseup', event => {
-  if (event.button == '4') {
-    if (isTalking === true) {
-      isTalking = false
-      muteTimeout = setTimeout(() => muteMic(), 1000)
-    }
-  }
 })
 
 ipcMain.on('asynchronous-message', (event, msg) => {
@@ -198,6 +166,37 @@ ipcMain.on('asynchronous-message', (event, msg) => {
     if (isTalking === true) {
       console.log("Mic desync. Opening Mic.")
       unmuteMic()
+    }
+  }
+})
+
+app.on('ready', event => {
+  ioHook.start();
+  console.log(`Dev Mode: ${devMode}`)
+
+  initConfig()
+    .then(value => {
+      configObj = value
+      return configObj
+    })
+    .then(configObj => {
+      console.log(configObj)
+  })
+
+})
+
+ioHook.on('mousedown', event => {
+  if (event.button == configObj.key) {
+    clearTimeout(muteTimeout)
+    unmuteMic()
+  }
+})
+
+ioHook.on('mouseup', event => {
+  if (event.button == configObj.key) {
+    if (isTalking === true) {
+      isTalking = false
+      muteTimeout = setTimeout(() => muteMic(), configObj.delay)
     }
   }
 })
