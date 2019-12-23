@@ -83,6 +83,19 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow()
 })
 
+// Force single instance
+let isSingleInstance = app.requestSingleInstanceLock()
+if (!isSingleInstance) {
+  app.quit()
+}
+// Force focus on single instance
+app.on('second-instance', (event, argv, cwd) => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus()
+  }
+})
+
 /* Security Stuff */
 
 app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
