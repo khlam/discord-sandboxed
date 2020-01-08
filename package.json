@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron . dev",
     "postinstall": "electron-builder install-app-deps",
-    "package-win": "electron-builder --win --publish never"
+    "package-win": "electron-builder --win --publish never",
+    "package-AppImage": "electron-builder --linux AppImage"
   },
   "repository": "https://github.com/khlam/discord-sandboxed",
   "keywords": [
