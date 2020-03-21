@@ -1,4 +1,4 @@
-> Don't use this yet. For educational purposes only.
+> Don't use this yet. Not entirely sure it protects you from anything.
 
 # Discord-Sandbox <a href="https://github.com/khlam/discord-sandboxed/releases/latest"><img src="https://img.shields.io/badge/download-latest-green.svg"></a>
 
