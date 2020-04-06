@@ -14,6 +14,7 @@ let webViewSession = null
 let isTalking = false
 let muteTimeout = null
 let configObj
+let micPermissionGranted = false
 
 function unmuteMic() {
   if ( selfMute === false ){
@@ -139,6 +140,7 @@ app.on('ready', () => {
       if (url.startsWith('https://discordapp.com/')) {
         if (permission === 'media' && isConnected === true) { // if user is connected to Discord voice then enable microphone
           console.log("User connected to Discord VOIP server. Granted permission for microphone")
+          micPermissionGranted = true
           return callback(true)
         }
       }
@@ -198,7 +200,7 @@ app.on('ready', event => {
 })
 
 ioHook.on('mousedown', event => {
-  if (event.button == configObj.key) {
+  if (event.button == configObj.key && (micPermissionGranted === true)) {
     clearTimeout(muteTimeout)
     unmuteMic()
   }
