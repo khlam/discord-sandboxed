@@ -109,7 +109,7 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
     webPreferences.nodeIntegration = false
 
     // Verify discordapp.com is being loaded
-    if (!params.src.startsWith('https://discordapp.com/')) {
+    if (!params.src.startsWith('https://discord.com/')) {
       event.preventDefault()
     }
   })
@@ -119,7 +119,7 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
   contents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
 
-    if (parsedUrl.origin !== 'https://discordapp.com/') { // Limit navigation to discordapp.com; not really relevant
+    if (parsedUrl.origin !== 'https://discord.com/') { // Limit navigation to discordapp.com; not really relevant
       event.preventDefault()
     }
   })
@@ -137,7 +137,7 @@ app.on('ready', () => {
   webViewSession = mainWindow.webContents.session
   webViewSession.setPermissionRequestHandler((webContents, permission, callback) => { // deny all permissions
       const url = webContents.getURL()
-      if (url.startsWith('https://discordapp.com/')) {
+      if (url.startsWith('https://discord.com/')) {
         if (permission === 'media' && isConnected === true) { // if user is connected to Discord voice then enable microphone
           console.log("User connected to Discord VOIP server. Granted permission for microphone")
           micPermissionGranted = true

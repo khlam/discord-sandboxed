@@ -6,14 +6,14 @@
 
 
 Are you worried Discord is watching what programs you have open or listening to your mic even while you're not pressing your push-to-talk key?
-Discord-Sandbox isolates the Discord client from reading background processes by running the [Discord web client](https://discordapp.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
+Discord-Sandbox isolates the Discord client from reading background processes by running the [Discord web client](https://discord.com/) inside of a [\<webview>](https://developer.chrome.com/apps/tags/webview), which is finally contained inside the Electron process.
 
 ## Enabling Push-to-Talk
 To enable push-to-talk, open Discord-Sandbox and set your push-to-talk key to `Backspace`. 
 
 ### How does Push-to-Talk Work?
 
-The [Discord web client](https://discordapp.com/) lacks push-to-talk detection while the browser session does not have window focus.
+The [Discord web client](https://discord.com/) lacks push-to-talk detection while the browser session does not have window focus.
 If you prefer push-to-talk, this gimping makes the web client almost unusable.
 
 Discord-Sandbox works around this issue and enables system-wide push-to-talk while respecting your privacy. 
@@ -57,4 +57,4 @@ Discord can still collect the following information. Since these are inherent to
 I do not claim to have created Discord.
 Discord-Sandbox is not the official Discord client.
 Discord is a freeware VoIP application made by Discord Inc.
-You can download the official Discord client [Here](https://discordapp.com/download).
+You can download the official Discord client [Here](https://discord.com/download).
