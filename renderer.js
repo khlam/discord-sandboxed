@@ -1,19 +1,3 @@
-function removeBloat(webview) {
-    console.log("Removing bloat")
-    bloatList = [
-        'buttons-205you', // remove buttons from chat box (Gift, GIF, and Emojis)
-        'noticeDefault-362Ko2',
-        'channelNotice-1-XFjC',
-    ]
-    bloatList.forEach(function(tag){
-        webview.executeJavaScript(`
-        if (document.getElementsByClassName("${tag}").length !== 0){
-            document.getElementsByClassName("${tag}")[document.getElementsByClassName("${tag}").length - 1].remove();
-        }
-        `)
-      })
-}
-
 function openMic(webview){  
     console.log("talking")
     document.getElementById("overlay").style.display = "block";
@@ -37,10 +21,10 @@ function userListChangeListener(webview) {
     const userListChangeCallback = function(mutationsList, observer) {
         console.log('--user list changed');
 
-        if (document.getElementsByClassName("container-1giJp5").length === 1){
-            console.log('--user has connected to discord voice server')
+        if (document.querySelectorAll('[aria-label="Disconnect"]').length === 1){
+            console.log('--user is connected to voice server')
         }else {
-            console.log('--user has disconnected to discord voice server')
+            console.log('--user is not connected to voice server')
         }
 
     };
@@ -85,10 +69,10 @@ onload = () => {
     // Insert a function that will be called later
     webview.executeJavaScript(`
         function isMicMuted() {
-            if (document.querySelectorAll('[aria-label="Mute"]').length === 0){
-                console.log("muted")
-            }else {
+            if (document.querySelectorAll('[aria-label="Mute"]')[0].getAttribute("aria-checked") === "false"){
                 console.log("unmuted")
+            }else {
+                console.log("muted")
             }
         }
         `)
@@ -96,13 +80,12 @@ onload = () => {
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
-        if (e.message === "--user has connected to discord voice server") {
+        if (e.message === "--user is connected to voice server") {
             console.log("Connected to server")
-            removeBloat(webview)
             window.postMessage({ type: "connected"}, "*")
         }
 
-        if (e.message === "--user has disconnected to discord voice server") {
+        if (e.message === "--user is not connected to voice server") {
             console.log("Disconnected from server")
             window.postMessage({ type: "disconnected"}, "*")
         }
