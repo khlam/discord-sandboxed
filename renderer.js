@@ -12,6 +12,23 @@ function muteMic(webview){
     webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
 
+function removeBloat(webview) {
+    console.log("--Removing bloat")
+    bloatList = [
+        'noticeDefault',
+        'noticeBrand',
+        'actionButtons-14eAc_',
+    ]
+    bloatList.forEach(function(tag){
+        webview.executeJavaScript(`
+            document.querySelectorAll("div[class^=${tag}]").forEach(e => {
+                console.log(e)
+                e.remove()
+            })
+        `)
+    })
+}
+
 // Creates an observer for user list to detect if server is switched
 function userListChangeListener(webview) {
     webview.executeJavaScript(`
@@ -105,6 +122,7 @@ onload = () => {
             webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button            
             userListChangeListener(webview)
             userMuteDeafenListener(webview)
+            removeBloat(webview)
         }
     })
 
@@ -113,7 +131,7 @@ onload = () => {
         "message",
         event => {
           if (event.origin === "file://" && event.source === window) {
-
+            
             if (event.data.type === "devMode" && event.data.text === "true") {
                 webview.openDevTools()
             }
