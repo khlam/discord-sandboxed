@@ -129,6 +129,16 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 })
 /*  ----  */
 
+app.on ('browser-window-blur', function (event, browserWindow)
+{
+    browserWindow.setOpacity (0.6);
+})
+
+app.on ('browser-window-focus', function (event, browserWindow)
+{
+    browserWindow.setOpacity (1.0);
+})
+
 app.on('ready', () => {
   // Handle permission requests
   webViewSession = mainWindow.webContents.session
@@ -200,7 +210,7 @@ app.on('ready', event => {
 })
 
 ioHook.on('mousedown', event => {
-  if (event.button == configObj.key && (micPermissionGranted === true)) {
+  if (event.button == configObj.key && (micPermissionGranted === true) && (isConnected === true)) {
     clearTimeout(muteTimeout)
     unmuteMic()
   }

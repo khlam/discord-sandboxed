@@ -2,14 +2,14 @@ function openMic(webview){
     console.log("talking")
     document.getElementById("overlay").style.display = "block";
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyDown'});
-    webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+    //webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
 
 function muteMic(webview){
     console.log("not talking")
     document.getElementById("overlay").style.display = "none";
     webview.sendInputEvent({keyCode: 'Backspace', type: 'keyUp'});
-    webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
+    //webview.sendInputEvent({keyCode: 'Backspace', type: 'char'});
 }
 
 function removeBloat(webview) {
@@ -66,7 +66,6 @@ function userMuteDeafenListener(webview) {
 onload = () => {
     document.getElementById("overlay").style.display = "none";
     const webview = document.querySelector('webview')
-    let muteTimeout = null
 
     // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
@@ -100,6 +99,7 @@ onload = () => {
         if (e.message === "--user is connected to voice server") {
             console.log("Connected to server")
             window.postMessage({ type: "connected"}, "*")
+            removeBloat(webview)
         }
 
         if (e.message === "--user is not connected to voice server") {
