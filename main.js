@@ -1,8 +1,16 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const { initConfig } = require('./src/config')
 const path = require('path')
-const ioHook = require('iohook')
 const URL = require('url').URL
+const {clipboard} = require('electron')
+
+let ioHook = false
+
+try {
+  ioHook = require('iohook')
+} catch(e) {
+  ioHook = false
+}
 
 'use strict';
 
@@ -104,8 +112,8 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 
     // Disable Node.js integration
     webPreferences.nodeIntegration = false
-
-    // Verify discordapp.com is being loaded
+    console.log(`web-contents-created: ${params.src}`)
+    // Verify discord.com is being loaded
     if (!params.src.startsWith('https://discord.com/')) {
       event.preventDefault()
     }
@@ -115,7 +123,7 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#12-disable-or-limit-navigation
   contents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
-
+    console.log(`will-navigate ${navigationUrl}`)
     if (parsedUrl.origin !== 'https://discord.com/') { // Limit navigation to discordapp.com; not really relevant
       event.preventDefault()
     }
@@ -124,7 +132,10 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 
 app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
   contents.on('new-window', async (event, navigationUrl) => {
-    event.preventDefault() // Prevents external links from opening
+    clipboard.writeText(navigationUrl, 'selection') // I really hope this is safe to do. Could also do a little URL cleaning here to remove trackers
+    console.log(`URL ${navigationUrl.toString().slice(0, 20)} Copied to Clipboard`)
+    mainWindow.webContents.send('URLCopied', null)
+    //event.preventDefault() // Prevents external links from opening
   })
 })
 /*  ----  */
@@ -194,7 +205,9 @@ ipcMain.on('asynchronous-message', (event, msg) => {
 })
 
 app.on('ready', event => {
-  ioHook.start();
+  if (ioHook) {
+    ioHook.start();
+  }
 
   console.log(`Dev Mode: ${devMode}`)
 
@@ -209,18 +222,20 @@ app.on('ready', event => {
 
 })
 
-ioHook.on('mousedown', event => {
-  if (event.button == configObj.key && (micPermissionGranted === true) && (isConnected === true)) {
-    clearTimeout(muteTimeout)
-    unmuteMic()
-  }
-})
-
-ioHook.on('mouseup', event => {
-  if (event.button == configObj.key) {
-    if (isTalking === true) {
-      isTalking = false
-      muteTimeout = setTimeout(() => muteMic(), configObj.delay)
+if (ioHook) {
+  ioHook.on('mousedown', event => {
+    if (event.button == configObj.key && (micPermissionGranted === true) && (isConnected === true)) {
+      clearTimeout(muteTimeout)
+      unmuteMic()
     }
-  }
-})
+  })
+  
+  ioHook.on('mouseup', event => {
+    if (event.button == configObj.key) {
+      if (isTalking === true) {
+        isTalking = false
+        muteTimeout = setTimeout(() => muteMic(), configObj.delay)
+      }
+    }
+  })
+}

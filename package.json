@@ -1,6 +1,6 @@
 {
   "name": "discordsandbox",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Discord Sandboxed",
   "main": "main.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "chokidar": "^3.3.1",
     "file-system": "^2.2.2",
-    "iohook": "^0.6.1"
+    "iohook": "^0.6.6"
   },
   "iohook": {
     "targets": [

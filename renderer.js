@@ -1,3 +1,18 @@
+let blockedLibrary = {}
+
+function convertObjToString(arr) {
+    let arrStr = `[`
+    arr.forEach(function(i, idx, array){
+        let _subStr = i.toString()
+        arrStr = arrStr.concat("'").concat(_subStr).concat("'")
+        if (idx !== array.length - 1){ 
+          arrStr = arrStr.concat(`,`)
+        }
+    })
+    arrStr = arrStr.concat(`]`).toString()
+    return arrStr
+}
+
 function openMic(webview){  
     console.log("talking")
     document.getElementById("overlay").style.display = "block";
@@ -22,7 +37,7 @@ function removeBloat(webview) {
     bloatList.forEach(function(tag){
         webview.executeJavaScript(`
             document.querySelectorAll("div[class^=${tag}]").forEach(e => {
-                console.log(e)
+                console.log("Removing ", e)
                 e.remove()
             })
         `)
@@ -67,8 +82,77 @@ onload = () => {
     document.getElementById("overlay").style.display = "none";
     const webview = document.querySelector('webview')
 
+    let _whiteList = [
+        'PATCH',                                       // Mute/Unmute/notification/cosmetic guild changes
+        'DELETE',                                      // Leaving a guild / Deleting messages
+        'https://discord.com/api/v6/channels/',        // Text channel address
+        'https://discord.com/api/v6/auth/login',       // Login address
+        'https://discord.com/api/v6/invites/',         // Accepting guild invite
+        'https://discord.com/api/v6/voice/regions',    // Required when creating new guild
+        'https://discord.com/api/v6/guilds',           // Creating a guild
+    ]
+
     // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
+
+        // Discord does not do client-side hashing
+        webview.executeJavaScript(`
+        (function(open, send) {
+            let whiteList = ${convertObjToString(_whiteList)}
+            
+            let xhrOpenRequestUrl
+            let xhrSendResponseUrl
+            let xhrMethod
+            let responseData
+
+            let _done = false
+            let _block = true
+            let _isWhitelisted = false
+
+            XMLHttpRequest.prototype.open = function(method, url, async) {
+
+                xhrMethod = method.toString()
+                xhrOpenRequestUrl = url.toString()
+                if (xhrOpenRequestUrl.includes("science")) {
+                    console.log("--BLOCKED.OPEN|" + xhrOpenRequestUrl)
+                    open.apply(this, false)
+                }
+
+                console.log("EVALUATING:", xhrOpenRequestUrl)
+
+                whiteList.forEach( wl => {
+                    if (xhrOpenRequestUrl.includes(wl) || xhrMethod.includes(wl)) {
+                        _done = true
+                        _block = false
+                        _isWhitelisted = true
+                        console.log("--ALLOWED.OPEN", xhrOpenRequestUrl + "")
+                        open.apply(this, arguments)
+                    }
+                })
+
+                if (_done === false) {
+                    console.log("--BLOCKED.OPEN|" + xhrOpenRequestUrl)
+                    open.apply(this, false)
+                }
+            }
+
+            XMLHttpRequest.prototype.send = function(data) {
+                if (_block === true || _isWhitelisted === false) {
+                    console.log("--BLOCKED.SEND", data, xhrOpenRequestUrl, _isWhitelisted)
+                    send.apply(this, false)
+                }
+                if (_block === false && _isWhitelisted === true) {
+                    if (data && !data.toString().includes("password")) {
+                        console.log("--ALLOWED.SEND", data, xhrOpenRequestUrl, _isWhitelisted)
+                    }else {
+                        console.log("--ALLOWED.SEND")
+                    }
+                    send.apply(this, arguments)
+                }
+            }
+        })(XMLHttpRequest.prototype.open, XMLHttpRequest.prototype.send)
+        `)
+
         webview.executeJavaScript(`
         let dlButton = document.getElementsByClassName("listItem-2P_4kh");
         t = setInterval(function(){
@@ -82,17 +166,17 @@ onload = () => {
         }, 500);
         `)
     
-    // Insert a function that will be called later
-    webview.executeJavaScript(`
-        function isMicMuted() {
-            if (document.querySelectorAll('[aria-label="Mute"]')[0].getAttribute("aria-checked") === "false"){
-                console.log("unmuted")
-            }else {
-                console.log("muted")
+        // Insert a function that will be called later
+        webview.executeJavaScript(`
+            function isMicMuted() {
+                if (document.querySelectorAll('[aria-label="Mute"]')[0].getAttribute("aria-checked") === "false"){
+                    console.log("unmuted")
+                }else {
+                    console.log("muted")
+                }
             }
-        }
-        `)
-    });
+            `)
+    })
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
@@ -124,6 +208,23 @@ onload = () => {
             userMuteDeafenListener(webview)
             removeBloat(webview)
         }
+        if (e.message.toString().includes("--BLOCKED.OPEN")) {
+            let url = e.message.toString().split(",").find(a =>a.includes("http")).split("https://")[1]
+            let count = blockedLibrary[url]
+            if (count) {
+                blockedLibrary[url] += 1
+            }else {
+                blockedLibrary[url] = 1
+            }
+            let table = document.getElementById("blockedTable")
+            let tableContents = ``.toString()
+            Object.keys(blockedLibrary).forEach(function(key) {
+                //console.log(`<tr> <td>${key.toString()}</td> <td>${blockedLibrary[key].toString()}</td> </tr>`.toString())
+                tableContents += `<tr> <td>${key.toString()}</td> <td>${blockedLibrary[key].toString()}</td> </tr>`.toString()
+            })
+            console.log(tableContents)
+            table.innerHTML = tableContents
+        }
     })
 
    // Accept commands from preload.js
@@ -146,6 +247,9 @@ onload = () => {
                 window.postMessage({ type: "confirmMicClose"}, "*")
             }
 
+            if (event.data.type === 'URLCopied') {
+                fadeBanner("copyConfirmBanner")
+            }
           }
         },
         false

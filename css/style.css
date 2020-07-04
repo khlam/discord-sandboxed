@@ -20,7 +20,7 @@ webview {
     display: none;
 }
 
-#overlay {
+.overlay {
     position: fixed;
     display: none;
     width: 100%;
@@ -29,6 +29,35 @@ webview {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color:RGBA(0, 255, 0, .3);
-    z-index: 2;
+    z-index: 9;
+    pointer-events:none;
+    touch-action:none;
+}
+
+.overlayTalking{
+    background-color:RGBA(0, 255, 0, .1);
+}
+
+.copiedBanner {
+    height: 60px;
+    width: 100%;
+    position: absolute;
+    z-index: 10;
+    background-color: black;
+    color: white;
+    font-size: 30px;
+    padding-top: 20px;
+    text-align: center;
+    pointer-events:none;
+    touch-action:none;
+    opacity: 0;
+}
+
+.blockedDisplay {
+    height: 100px;
+    width: 60px;
+    position: absolute;
+    z-index: 9;
+    color: #a6ffb3;
+    font-size: 15px;
 }

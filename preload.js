@@ -19,6 +19,11 @@ ipcRenderer.on('micClose', (event, msg) => {
   window.postMessage({ type: "micClose"}, "*")
 })
 
+
+ipcRenderer.on('URLCopied', (event, msg) => {
+  window.postMessage({ type: "URLCopied"}, "*")
+})
+
 // Handle events sent from renderer, sends it to main
 window.addEventListener(
   "message",
