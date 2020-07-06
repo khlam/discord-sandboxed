@@ -1,0 +1,33 @@
+html, body{
+    color: white;
+    font-family: "Lucida Console", Courier, monospace;
+    background-color: black;
+    margin: 0px;
+    padding: 0px;
+}
+
+.logContainer {
+    height: 360px;
+    display: block;
+    overflow-x: hidden;
+}
+
+.logTable {
+    padding: 0px;
+    border-collapse: collapse;
+    display: block;
+}
+
+.logTable td, .logTable th {
+    border: 0px;
+    padding: 3px;
+    word-wrap: break-word;
+}
+
+.logTable th {
+    border: 0px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    text-align: right;
+    color: white;
+}

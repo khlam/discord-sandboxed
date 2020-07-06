@@ -1,6 +1,6 @@
 {
   "name": "discordsandbox",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Discord Sandboxed",
   "main": "main.js",
   "scripts": {
@@ -44,14 +44,14 @@
     "productName": "Discord Sandboxed",
     "win": {
       "asar": true,
-      "icon": "assets/icon.ico",
+      "icon": "views/assets/icon.ico",
       "target": [
         "nsis"
       ]
     },
     "nsis": {
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico",
+      "installerIcon": "views/assets/icon.ico",
+      "uninstallerIcon": "views/assets/icon.ico",
       "license": "LICENSE.md",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!--style-src 'self' 'unsafe-inline' needs evaluation, some conflict with node_modules\electron\dist\resources\electron.asar\renderer\web-view\web-view-impl.js-->
+    <meta http-equiv="Content-Security-Policy" content="default-src none; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link type="text/css" rel="stylesheet" href="./css/logStyle.css">
+    <link type="text/css" rel="stylesheet" href="./css/titlebar.css">
+  </head>
+
+  <body>
+
+    <div class="title-bar">
+      <div class="app-name-container">
+        <p></p>
+      </div>
+      <div class="window-controls-container">
+        <button id="minimize-button" class="minimize-button"> - </button>
+        <button id="close-button" class="close-button"> x </button>
+      </div>
+    </div>
+
+    <div id="logContainer" class="logContainer">
+      <table style="width: 100%;" id="logDisplayTable" class="logTable"></table>
+    </div>
+
+    <script src="./js/logRender.js"></script>
+    <script src="./js/titlebar.js"></script>
+  </body>
+  
+</html>

@@ -15,6 +15,7 @@ try {
 'use strict';
 
 let mainWindow
+let logWindow
 let devMode = false
 let selfMute = false
 let isConnected = false
@@ -23,6 +24,14 @@ let isTalking = false
 let muteTimeout = null
 let configObj
 let micPermissionGranted = false
+
+
+// Set Dev mode
+if (process.argv.length === 3) {
+  if (process.argv[2] === 'dev'){
+    devMode = true
+  }
+}
 
 function unmuteMic() {
   if ( selfMute === false){
@@ -37,56 +46,86 @@ function muteMic() {
   if (selfMute === false) {
     console.log("Not Talking")
     mainWindow.webContents.send('micClose', 'mic-closed')
-    mainWindow.setTitle("MUTED")
+    mainWindow.setTitle("MIC CLOSED")
   }
 }
 
-function createWindow () {
+function createMainWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1230,
     height: 800,
-    icon: './assets/icon.ico',
+    icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
       enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
       partition: 'persist:discord',
       webviewTag: true
-    }
+    },
+    frame: false
   })
-
-  // Set Dev mode
-  if (process.argv.length === 3) {
-    if (process.argv[2] === 'dev'){
-      devMode = true
-    }
-  }
 
   if (devMode === false){
     mainWindow.setMenu(null)
   }
 
-  mainWindow.loadFile('index.html') // and load the index.html of the app.
+  mainWindow.loadFile('./views/index.html')
+  
+  mainWindow.setTitle("Discord Sandboxed")
 
   mainWindow.on('closed', function () {
     mainWindow = null
   })
 }
 
-app.on('ready', createWindow)
+function createLogWindow() {
+  logWindow = new BrowserWindow({
+    width: 700,
+    height: 400,
+    icon: './views/assets/icon.ico',
+    webPreferences: {
+      preload: path.join(__dirname, 'logload.js'),
+      nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
+      enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
+      partition: 'persist:discord'
+    },
+    frame: false
+  })
+  
+  if (devMode === false){
+    logWindow.setMenu(null)
+  }
+
+  logWindow.loadFile('./views/log.html')
+  logWindow.setTitle("Logs")
+  logWindow.on('closed', function () {
+    logWindow = null
+  })
+}
+
+function maximizeMinimizeState(windowName){
+  if (windowName.isMaximized()) {
+    windowName.unmaximize()
+  } else {
+    windowName.maximize()
+  }
+}
+
+app.on('ready', createMainWindow)
+
+
+if (devMode) {
+  app.on('ready', createLogWindow)
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('activate', function () {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow()
+  if (mainWindow === null) createMainWindow()
 })
 
 // Force single instance
@@ -99,6 +138,11 @@ app.on('second-instance', (event, argv, cwd) => {
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore()
     mainWindow.focus()
+  }
+
+  if (logWindow) {
+    if (logWindow.isMinimized()) mainWindow.restore()
+    logWindow.focus()
   }
 })
 
@@ -140,6 +184,7 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 })
 /*  ----  */
 
+/*
 app.on ('browser-window-blur', function (event, browserWindow)
 {
     browserWindow.setOpacity (0.6);
@@ -148,7 +193,7 @@ app.on ('browser-window-blur', function (event, browserWindow)
 app.on ('browser-window-focus', function (event, browserWindow)
 {
     browserWindow.setOpacity (1.0);
-})
+})*/
 
 app.on('ready', () => {
   // Handle permission requests
@@ -167,7 +212,8 @@ app.on('ready', () => {
   })
 })
 
-ipcMain.on('asynchronous-message', (event, msg) => {
+ipcMain.on('asynchronous-message', (event, _data) => {
+  let msg = _data.msg
   if (msg === 'connected') {
     console.log("User connected to Discord VOIP server")
     if (micPermissionGranted === false && selfMute === false){
@@ -202,6 +248,50 @@ ipcMain.on('asynchronous-message', (event, msg) => {
       unmuteMic()
     }
   }
+
+  if (msg === 'blockUpdate') {
+    if (logWindow){
+      logWindow.webContents.send('blockUpdate', _data.data)
+    }
+  }
+
+  if (msg === 'minimizeApplication') {
+    if (_data.data.wName === 0) {
+      mainWindow.minimize()
+    }
+    if (_data.data.wName === 1) {
+      logWindow.minimize()
+    }
+  }
+
+  if (msg === 'maximizeApplication') {
+    if (_data.data.wName === 0) {
+      maximizeMinimizeState(mainWindow)
+    }
+    if (_data.data.wName === 1) {
+      maximizeMinimizeState(logWindow)
+    }
+  }
+
+  if (msg === 'closeApplication') {
+    if (_data.data.wName === 0) {
+      app.quit()
+    }
+    if (_data.data.wName === 1) {
+      logWindow.close()
+    }
+  }
+
+  if (msg === 'openLog') {
+    if (logWindow) {
+      if (logWindow.isMinimized()) mainWindow.restore()
+      logWindow.focus()
+    }else {
+      createLogWindow()
+      logWindow.center()
+    }
+  }
+
 })
 
 app.on('ready', event => {
