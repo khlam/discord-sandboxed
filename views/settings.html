@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!--style-src 'self' 'unsafe-inline' needs evaluation, some conflict with node_modules\electron\dist\resources\electron.asar\renderer\web-view\web-view-impl.js-->
     <meta http-equiv="Content-Security-Policy" content="default-src none; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link type="text/css" rel="stylesheet" href="./css/logStyle.css">
+    <link type="text/css" rel="stylesheet" href="./css/settingsStyle.css">
     <link type="text/css" rel="stylesheet" href="./css/titlebar.css">
   </head>
 
@@ -12,7 +12,7 @@
 
     <div class="title-bar">
       <div class="app-name-container">
-        <p>Logs</p>
+        <p>Settings</p>
       </div>
       <div class="window-controls-container">
         <div id="minimize-button" class="minimize-button menu-button">
@@ -24,11 +24,32 @@
       </div>
     </div>
 
-    <div id="logContainer" class="logContainer">
-      <table style="width: 100%;" id="logDisplayTable" class="logTable"></table>
+    <div id="settingsContainer" class="settingsContainer">
+    <table>
+      <tr>
+        <td align="right">Enable System-wide Push to Talk</td>
+        <td>
+          <input type="checkbox" id="pttEnable" name="ptt">
+        </td>
+      </tr>
+
+      <tr>
+        <td align="right">Push to Talk Key</td>
+        <td>
+          <button id='setPTTKeyButton' class="niceButton">loading...</button>
+        </td>
+      </tr>
+
+      <tr>
+        <td align="right">Push to Talk Release Delay (ms)</td>
+        <td>
+          <input id='pttDelay' type="number">
+        </td>
+      </tr>
+    </table>
     </div>
 
-    <script src="./js/logRender.js"></script>
+    <script src="./js/settingsRender.js"></script>
     <script src="./js/titlebar.js"></script>
   </body>
   

@@ -1,0 +1,15 @@
+html, body{
+    color: #FFFFFF;
+    font-family: "Lucida Console", Courier, monospace;
+    background-color: #23272A;
+    margin: 0px;
+    padding: 0px;
+}
+
+.settingsContainer {
+    color: #FFFFFF;
+}
+
+#niceButton {
+    background-color: rgb(255, 59, 48);
+}

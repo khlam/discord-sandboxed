@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 
-// Send commands from main to renderer
+// Pass commands sent from main.js to mainRender.js
 ipcRenderer.on('devMode', (event, msg) => {
   console.log(`PRELOAD: Dev Mode: ${msg}`)
   window.postMessage({ type: "devMode", text: `${msg}` }, "*")
@@ -19,7 +19,7 @@ ipcRenderer.on('URLCopied', (event, msg) => {
   window.postMessage({ type: "URLCopied"}, "*")
 })
 
-// Handle events sent from renderer, sends it to main
+// Pass commands sent from mainwindow (processed by mainRender.js) to main.js
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.send('asynchronous-message', {msg: 'DOMready'})
 })
@@ -71,6 +71,11 @@ window.addEventListener(
 
       if (event.data.type === 'openLog'){
         ipcRenderer.send('asynchronous-message', {msg: 'openLog'})
+      }
+
+      
+      if (event.data.type === 'openSettings'){
+        ipcRenderer.send('asynchronous-message', {msg: 'openSettings'})
       }
     }
   },

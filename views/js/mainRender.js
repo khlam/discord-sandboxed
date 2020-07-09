@@ -254,30 +254,30 @@ onload = () => {
         }
     })
 
-   // Accept commands from preload.js
+    // Accept commands from mainLoad.js
     window.addEventListener(
         "message",
         event => {
-          if (event.origin === "file://" && event.source === window) {
-            if (event.data.type === "devMode" && event.data.text === "true") {
-                console.log("Dev Mode On")
-                webview.openDevTools()
-            }
+            if (event.origin === "file://" && event.source === window) {
+                if (event.data.type === "devMode" && event.data.text === "true") {
+                    console.log("Dev Mode On")
+                    webview.openDevTools()
+                }
 
-            if (event.data.type === 'micOpen'){
-                openMic(webview)
-                window.postMessage({ type: "confirmMicOpen"}, "*")
-            }
+                if (event.data.type === 'micOpen'){
+                    openMic(webview)
+                    window.postMessage({ type: "confirmMicOpen"}, "*")
+                }
 
-            if (event.data.type === 'micClose'){
-                muteMic(webview)
-                window.postMessage({ type: "confirmMicClose"}, "*")
-            }
+                if (event.data.type === 'micClose'){
+                    muteMic(webview)
+                    window.postMessage({ type: "confirmMicClose"}, "*")
+                }
 
-            if (event.data.type === 'URLCopied') {
-                fadeBanner("copyConfirmBanner")
+                if (event.data.type === 'URLCopied') {
+                    fadeBanner("copyConfirmBanner")
+                }
             }
-          }
         },
         false
     )

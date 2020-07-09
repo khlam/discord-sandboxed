@@ -1,7 +1,7 @@
 html, body{
-    color: white;
+    color: #FFFFFF;
     font-family: "Lucida Console", Courier, monospace;
-    background-color: black;
+    background-color: #23272A;
     margin: 0px;
     padding: 0px;
 }
@@ -29,5 +29,5 @@ html, body{
     padding-top: 3px;
     padding-bottom: 3px;
     text-align: right;
-    color: white;
+    color: #FFFFFF;
 }

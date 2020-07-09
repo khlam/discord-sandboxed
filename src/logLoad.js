@@ -1,11 +1,11 @@
 const { ipcRenderer } = require('electron')
 
-// Send commands from main to logRenderer
+// Pass commands sent from main.js to logRender.js
 ipcRenderer.on('blockUpdate', (event, msg) => {
-    window.postMessage({ type: "blockUpdate", payload: msg }, "*")
+  window.postMessage({ type: "blockUpdate", payload: msg }, "*")
 })
 
-
+// Pass commands sent from log window (processed by logRender.js) to main.js
 window.addEventListener(
     "message",
     event => {

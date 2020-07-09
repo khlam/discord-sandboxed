@@ -1,5 +1,5 @@
 // Send window minimize/maximize/close commands to main
-// See windowName variable in mainRender.js and logRender.js
+// See windowName variable in mainRender.js, logRender.js, and settingsRender.js
 const minButton = document.getElementById('minimize-button')
 if (minButton) {
     minButton.onclick = function () {
@@ -25,5 +25,12 @@ const logButton = document.getElementById('openLogButton')
 if (logButton) {
     logButton.onclick = function () {
         window.postMessage({ type: "openLog" }, "*")
+    }
+}
+
+const settingsButton = document.getElementById('openSettingsButton')
+if (settingsButton) {
+    settingsButton.onclick = function () {
+        window.postMessage({ type: "openSettings" }, "*")
     }
 }

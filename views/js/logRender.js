@@ -1,4 +1,5 @@
 let windowName = 1
+
 function appendRow(data) {
     let dateNow = new Date()
     let table = document.getElementById("logDisplayTable")
@@ -10,9 +11,8 @@ function appendRow(data) {
     document.getElementById('logContainer').scrollTo(0, document.getElementById('logContainer').scrollHeight)
 }
 
-
 onload = () => {
-    // Accept commands from preload.js
+    // Display logs sent from logLoad.js
     window.addEventListener(
         "message",
         event => {
