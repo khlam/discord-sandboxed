@@ -91,11 +91,12 @@ onload = () => {
     const whiteList = [
         'PATCH',                                       // Mute/Unmute/notification/cosmetic guild changes
         'DELETE',                                      // Leaving a guild / Deleting messages
-        'https://discord.com/api/v6/channels/',        // Text channel address
-        'https://discord.com/api/v6/auth/login',       // Login address
-        'https://discord.com/api/v6/invites/',         // Accepting guild invite
-        'https://discord.com/api/v6/voice/regions',    // Required when creating new guild
-        'https://discord.com/api/v6/guilds',           // Creating a guild
+        'https://discord.com/api/v8/channels/',        // Text channel address
+        'https://discord.com/api/v8/auth/login',       // Login address
+        'https://discord.com/api/v8/invites/',         // Accepting guild invite
+        'https://discord.com/api/v8/voice/regions',    // Required when creating new guild
+        'https://discord.com/api/v8/guilds',           // Creating a guild
+        'https://discord.com/api/v8/gateway'         // This may be required to get past login screen if not cached locally
     ]
 
     const _whiteList = convertObjToString(whiteList)
@@ -262,6 +263,15 @@ onload = () => {
                 if (event.data.type === "devMode" && event.data.text === "true") {
                     console.log("Dev Mode On")
                     webview.openDevTools()
+                }
+
+                if (event.data.type === 'unfocused'){
+                    console.log("window unfocused")
+                    document.getElementById('titleBar').style.color = "#7f7f7f"
+                }
+                if (event.data.type === 'focused'){
+                    console.log("window focused")
+                    document.getElementById('titleBar').style.color = "#ffffff"
                 }
 
                 if (event.data.type === 'micOpen'){

@@ -21,6 +21,15 @@ onload = () => {
                 console.log(event.data.payload)
                 appendRow(event.data.payload)
             }
+
+            if (event.data.type === 'unfocused'){
+                console.log("window unfocused")
+                document.getElementById('titleBar').style.color = "#7f7f7f"
+            }
+            if (event.data.type === 'focused'){
+                console.log("window focused")
+                document.getElementById('titleBar').style.color = "#ffffff"
+            }
         }
         },
         false

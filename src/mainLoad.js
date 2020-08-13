@@ -19,6 +19,14 @@ ipcRenderer.on('URLCopied', (event, msg) => {
   window.postMessage({ type: "URLCopied"}, "*")
 })
 
+ipcRenderer.on('unfocused', (event, msg) => {
+  window.postMessage({ type: "unfocused"}, "*")
+})
+
+ipcRenderer.on('focused', (event, msg) => {
+  window.postMessage({ type: "focused"}, "*")
+})
+
 // Pass commands sent from mainwindow (processed by mainRender.js) to main.js
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.send('asynchronous-message', {msg: 'DOMready'})

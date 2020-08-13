@@ -5,6 +5,14 @@ ipcRenderer.on('settingsObj', (event, msg) => {
   window.postMessage({ type: "settingsObj", payload: msg }, "*")
 })
 
+ipcRenderer.on('unfocused', (event, msg) => {
+  window.postMessage({ type: "unfocused"}, "*")
+})
+
+ipcRenderer.on('focused', (event, msg) => {
+  window.postMessage({ type: "focused"}, "*")
+})
+
 // Pass commands sent from settings window (processed by settingsRender.js) to main.js
 window.addEventListener(
     "message",

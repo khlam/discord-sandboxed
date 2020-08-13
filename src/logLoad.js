@@ -5,6 +5,14 @@ ipcRenderer.on('blockUpdate', (event, msg) => {
   window.postMessage({ type: "blockUpdate", payload: msg }, "*")
 })
 
+ipcRenderer.on('unfocused', (event, msg) => {
+  window.postMessage({ type: "unfocused"}, "*")
+})
+
+ipcRenderer.on('focused', (event, msg) => {
+  window.postMessage({ type: "focused"}, "*")
+})
+
 // Pass commands sent from log window (processed by logRender.js) to main.js
 window.addEventListener(
     "message",

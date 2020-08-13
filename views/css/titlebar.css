@@ -44,7 +44,8 @@
 }
 
 .menu-button:hover {
-    background-color: grey;
+    background-color: #e5e5e5;
+    color: #191919;
 }
 
 .minimize-button {
@@ -61,5 +62,6 @@
 
 .close-button:hover {
     background-color: rgb(255, 59, 48);
+    color: #FFFFFF;
 }
 

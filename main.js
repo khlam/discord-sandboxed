@@ -9,6 +9,7 @@ let ioHook = null
 try {
   ioHook = require('iohook')
 } catch(e) {
+  console.log(e)
   ioHook = false
 }
 
@@ -259,14 +260,14 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 })
 /*  ----  */
 
-/*
+
 app.on ('browser-window-blur', function (event, browserWindow) {
-  browserWindow.setOpacity (0.7);
+  browserWindow.webContents.send('unfocused', null)
 })
 
 app.on ('browser-window-focus', function (event, browserWindow) {
-  browserWindow.setOpacity (1.0);
-})*/
+  browserWindow.webContents.send('focused', null)
+})
 
 app.on('ready', () => {
   // Handle permission requests
