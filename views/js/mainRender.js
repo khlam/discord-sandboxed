@@ -1,4 +1,10 @@
 let blockedLibrary = {}
+let isConnectedToVoiceServer = false
+
+let keepAliveClientOP = null
+let keepAliveRemoteOP = null
+
+let windowName = 0
 
 function convertObjToString(arr) {
     let arrStr = `[`
@@ -38,7 +44,7 @@ function removeBloat(webview) {
         webview.executeJavaScript(`
             document.querySelectorAll("div[class^=${tag}]").forEach(e => {
                 console.log("Removing ", e)
-                e.remove()
+                e.style.display = 'none'
             })
         `)
     })
@@ -82,23 +88,26 @@ onload = () => {
     document.getElementById("overlay").style.display = "none";
     const webview = document.querySelector('webview')
 
-    let _whiteList = [
+    const whiteList = [
         'PATCH',                                       // Mute/Unmute/notification/cosmetic guild changes
         'DELETE',                                      // Leaving a guild / Deleting messages
-        'https://discord.com/api/v6/channels/',        // Text channel address
-        'https://discord.com/api/v6/auth/login',       // Login address
-        'https://discord.com/api/v6/invites/',         // Accepting guild invite
-        'https://discord.com/api/v6/voice/regions',    // Required when creating new guild
-        'https://discord.com/api/v6/guilds',           // Creating a guild
+        'https://discord.com/api/v8/channels/',        // Text channel address
+        'https://discord.com/api/v8/auth/login',       // Login address
+        'https://discord.com/api/v8/invites/',         // Accepting guild invite
+        'https://discord.com/api/v8/voice/regions',    // Required when creating new guild
+        'https://discord.com/api/v8/guilds',           // Creating a guild
+        'https://discord.com/api/v8/gateway'         // This may be required to get past login screen if not cached locally
     ]
+
+    const _whiteList = convertObjToString(whiteList)
 
     // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
-
+        
         // Discord does not do client-side hashing
         webview.executeJavaScript(`
         (function(open, send) {
-            let whiteList = ${convertObjToString(_whiteList)}
+            let whiteList = ${_whiteList}
             
             let xhrOpenRequestUrl
             let xhrSendResponseUrl
@@ -109,13 +118,12 @@ onload = () => {
             let _block = true
             let _isWhitelisted = false
 
-            XMLHttpRequest.prototype.open = function(method, url, async) {
-
+            XMLHttpRequest.prototype.open = function(method, url, async, x, y) {
                 xhrMethod = method.toString()
                 xhrOpenRequestUrl = url.toString()
                 if (xhrOpenRequestUrl.includes("science")) {
                     console.log("--BLOCKED.OPEN|" + xhrOpenRequestUrl)
-                    open.apply(this, false)
+                    return open.apply(this, false)
                 }
 
                 console.log("EVALUATING:", xhrOpenRequestUrl)
@@ -126,20 +134,20 @@ onload = () => {
                         _block = false
                         _isWhitelisted = true
                         console.log("--ALLOWED.OPEN", xhrOpenRequestUrl + "")
-                        open.apply(this, arguments)
+                        return open.apply(this, arguments)
                     }
                 })
 
                 if (_done === false) {
                     console.log("--BLOCKED.OPEN|" + xhrOpenRequestUrl)
-                    open.apply(this, false)
+                    return open.apply(this, false)
                 }
             }
-
+            
             XMLHttpRequest.prototype.send = function(data) {
                 if (_block === true || _isWhitelisted === false) {
                     console.log("--BLOCKED.SEND", data, xhrOpenRequestUrl, _isWhitelisted)
-                    send.apply(this, false)
+                    return send.apply(this, false)
                 }
                 if (_block === false && _isWhitelisted === true) {
                     if (data && !data.toString().includes("password")) {
@@ -147,7 +155,7 @@ onload = () => {
                     }else {
                         console.log("--ALLOWED.SEND")
                     }
-                    send.apply(this, arguments)
+                    return send.apply(this, arguments)
                 }
             }
         })(XMLHttpRequest.prototype.open, XMLHttpRequest.prototype.send)
@@ -175,20 +183,23 @@ onload = () => {
                     console.log("muted")
                 }
             }
-            `)
+        `)
     })
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
+       
         if (e.message === "--user is connected to voice server") {
             console.log("Connected to server")
             window.postMessage({ type: "connected"}, "*")
             removeBloat(webview)
+            isConnectedToVoiceServer = true
         }
 
         if (e.message === "--user is not connected to voice server") {
             console.log("Disconnected from server")
             window.postMessage({ type: "disconnected"}, "*")
+            isConnectedToVoiceServer = false
         }
 
         if (e.message === "muted") {
@@ -203,54 +214,80 @@ onload = () => {
 
         // Execute JS into the webview after login
         if (e.message === "--discord-load-complete") {
-            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].remove();`) // Remove download button            
+            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].style.display = 'none';`) // Remove download button            
             userListChangeListener(webview)
             userMuteDeafenListener(webview)
             removeBloat(webview)
         }
+        
         if (e.message.toString().includes("--BLOCKED.OPEN")) {
-            let url = e.message.toString().split(",").find(a =>a.includes("http")).split("https://")[1]
-            let count = blockedLibrary[url]
-            if (count) {
-                blockedLibrary[url] += 1
-            }else {
-                blockedLibrary[url] = 1
+            let _url = e.message.toString().split(",").find(a =>a.includes("http")).split("https://")[1]
+            if (!(_url in blockedLibrary)) {
+                blockedLibrary[_url] = 1
             }
-            let table = document.getElementById("blockedTable")
-            let tableContents = ``.toString()
-            Object.keys(blockedLibrary).forEach(function(key) {
-                //console.log(`<tr> <td>${key.toString()}</td> <td>${blockedLibrary[key].toString()}</td> </tr>`.toString())
-                tableContents += `<tr> <td>${key.toString()}</td> <td>${blockedLibrary[key].toString()}</td> </tr>`.toString()
-            })
-            console.log(tableContents)
-            table.innerHTML = tableContents
+
+            blockedLibrary[_url] += 1
+
+            window.postMessage({ type: "blockUpdate", payload: {url: _url, count: blockedLibrary[_url]}}, "*")
+        }
+
+        if (keepAliveClientOP === null) {
+            if (e.message.toString().includes("S->>|")) {
+                let _data = e.message.split("|")[1]
+                _data = JSON.parse(_data)
+                console.log(_data)
+                if (Number.isInteger(_data.d)){
+                    keepAliveClientOP = _data.op
+                    console.log("Client OP", keepAliveClientOP)
+                }
+            }
+        }
+
+        if (keepAliveRemoteOP === null) {
+            if (e.message.toString().includes("R-<<|")) {
+                let _data = e.message.split("|")[1]
+                _data = JSON.parse(_data)
+                if (Number.isInteger(_data.d)){
+                    keepAliveRemoteOP = _data.op
+                    console.log("Client OP", keepAliveRemoteOP)
+                }
+            }
         }
     })
 
-   // Accept commands from preload.js
+    // Accept commands from mainLoad.js
     window.addEventListener(
         "message",
         event => {
-          if (event.origin === "file://" && event.source === window) {
-            
-            if (event.data.type === "devMode" && event.data.text === "true") {
-                webview.openDevTools()
-            }
+            if (event.origin === "file://" && event.source === window) {
+                if (event.data.type === "devMode" && event.data.text === "true") {
+                    console.log("Dev Mode On")
+                    webview.openDevTools()
+                }
 
-            if (event.data.type === 'micOpen'){
-                openMic(webview)
-                window.postMessage({ type: "confirmMicOpen"}, "*")
-            }
+                if (event.data.type === 'unfocused'){
+                    console.log("window unfocused")
+                    document.getElementById('titleBar').style.color = "#7f7f7f"
+                }
+                if (event.data.type === 'focused'){
+                    console.log("window focused")
+                    document.getElementById('titleBar').style.color = "#ffffff"
+                }
 
-            if (event.data.type === 'micClose'){
-                muteMic(webview)
-                window.postMessage({ type: "confirmMicClose"}, "*")
-            }
+                if (event.data.type === 'micOpen'){
+                    openMic(webview)
+                    window.postMessage({ type: "confirmMicOpen"}, "*")
+                }
 
-            if (event.data.type === 'URLCopied') {
-                fadeBanner("copyConfirmBanner")
+                if (event.data.type === 'micClose'){
+                    muteMic(webview)
+                    window.postMessage({ type: "confirmMicClose"}, "*")
+                }
+
+                if (event.data.type === 'URLCopied') {
+                    fadeBanner("copyConfirmBanner")
+                }
             }
-          }
         },
         false
     )

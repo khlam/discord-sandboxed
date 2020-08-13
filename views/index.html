@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!--style-src 'self' 'unsafe-inline' needs evaluation, some conflict with node_modules\electron\dist\resources\electron.asar\renderer\web-view\web-view-impl.js-->
+    <meta http-equiv="Content-Security-Policy" content="default-src none; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link type="text/css" rel="stylesheet" href="./css/style.css">
+    <link type="text/css" rel="stylesheet" href="./css/titlebar.css">
+  </head>
+
+  <div class="copiedBanner" id="copyConfirmBanner">Address Copied to Clipboard</div>
+  <body>
+    <div class="overlay overlayTalking" id="overlay"></div>
+    <div id="outer">
+      
+      <div class="title-bar" id="titleBar">
+        <div class="menu-button-container">
+          <div id="openSettingsButton" class="menu-button">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-gear" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M8.837 1.626c-.246-.835-1.428-.835-1.674 0l-.094.319A1.873 1.873 0 0 1 4.377 3.06l-.292-.16c-.764-.415-1.6.42-1.184 1.185l.159.292a1.873 1.873 0 0 1-1.115 2.692l-.319.094c-.835.246-.835 1.428 0 1.674l.319.094a1.873 1.873 0 0 1 1.115 2.693l-.16.291c-.415.764.42 1.6 1.185 1.184l.292-.159a1.873 1.873 0 0 1 2.692 1.116l.094.318c.246.835 1.428.835 1.674 0l.094-.319a1.873 1.873 0 0 1 2.693-1.115l.291.16c.764.415 1.6-.42 1.184-1.185l-.159-.291a1.873 1.873 0 0 1 1.116-2.693l.318-.094c.835-.246.835-1.428 0-1.674l-.319-.094a1.873 1.873 0 0 1-1.115-2.692l.16-.292c.415-.764-.42-1.6-1.185-1.184l-.291.159A1.873 1.873 0 0 1 8.93 1.945l-.094-.319zm-2.633-.283c.527-1.79 3.065-1.79 3.592 0l.094.319a.873.873 0 0 0 1.255.52l.292-.16c1.64-.892 3.434.901 2.54 2.541l-.159.292a.873.873 0 0 0 .52 1.255l.319.094c1.79.527 1.79 3.065 0 3.592l-.319.094a.873.873 0 0 0-.52 1.255l.16.292c.893 1.64-.902 3.434-2.541 2.54l-.292-.159a.873.873 0 0 0-1.255.52l-.094.319c-.527 1.79-3.065 1.79-3.592 0l-.094-.319a.873.873 0 0 0-1.255-.52l-.292.16c-1.64.893-3.433-.902-2.54-2.541l.159-.292a.873.873 0 0 0-.52-1.255l-.319-.094c-1.79-.527-1.79-3.065 0-3.592l.319-.094a.873.873 0 0 0 .52-1.255l-.16-.292c-.892-1.64.902-3.433 2.541-2.54l.292.159a.873.873 0 0 0 1.255-.52l.094-.319z"/>
+              <path fill-rule="evenodd" d="M8 5.754a2.246 2.246 0 1 0 0 4.492 2.246 2.246 0 0 0 0-4.492zM4.754 8a3.246 3.246 0 1 1 6.492 0 3.246 3.246 0 0 1-6.492 0z"/>
+            </svg>
+          </div>
+          <div id="openLogButton" class="menu-button">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+              <path fill-rule="evenodd" d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="app-name-container">
+          <p></p>
+        </div>
+        <div class="window-controls-container">
+          <div id="minimize-button" class="minimize-button menu-button">
+            <svg height="100%" width="100%" viewBox="0 0 24 24" fill="currentColor" style="display: block; margin: auto" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M20,19H4v-2h16V19z"/></svg>
+          </div>
+          <div id="min-max-button" class="min-max-button menu-button">
+            <svg height="100%" width="100%" viewBox="0 0 24 24" fill="currentColor" style="display: block; margin: auto" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18.8,4H5.2C4.6,4,4,4.6,4,5.2v13.5C4,19.4,4.6,20,5.2,20h13.5c0.7,0,1.2-0.6,1.2-1.2V5.2C20,4.6,19.4,4,18.8,4z M18,18H6V6h12V18z"/></svg>
+          </div>
+          <div id="close-button" class="close-button menu-button">
+            <svg height="100%" width="100%" viewBox="0 0 24 24" fill="currentColor" style="display: block; margin: auto" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M20,5.6L18.4,4L12,10.4L5.6,4L4,5.6l6.4,6.4L4,18.4L5.6,20l6.4-6.4l6.4,6.4l1.6-1.6L13.6,12L20,5.6z"/></svg>
+          </div>
+        </div>
+      </div>
+    
+      <div id="mainDisplay">
+        <!-- https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module -->
+        <webview id="discord" enableremotemodule="false" webpreferences="useragent='Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'" partition="persist:discord" src="https://discord.com/login"></webview>
+      
+      </div>
+    </div>
+
+    <script src="./js/mainRender.js"></script>
+    <script src="./js/titlebar.js"></script>
+    <script src="./js/helper.js"></script>
+  </body>
+  
+</html>
