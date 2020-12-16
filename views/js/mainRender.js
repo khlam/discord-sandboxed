@@ -118,11 +118,26 @@ onload = () => {
             let _block = true
             let _isWhitelisted = false
 
+
+            const Logger = window.__SENTRY__.logger
+            Logger.disable()
+            const SentryHub =  window.DiscordSentry.getCurrentHub()
+            SentryHub.getClient().close(0)
+            SentryHub.getStackTop().scope.clear()
+
             XMLHttpRequest.prototype.open = function(method, url, async, x, y) {
                 xhrMethod = method.toString()
                 xhrOpenRequestUrl = url.toString()
                 if (xhrOpenRequestUrl.includes("science")) {
                     console.log("--BLOCKED.OPEN|" + xhrOpenRequestUrl)
+
+                    const Logger = window.__SENTRY__.logger
+                    Logger.disable()
+        
+                    const SentryHub =  window.DiscordSentry.getCurrentHub()
+                    SentryHub.getClient().close(0)
+                    SentryHub.getStackTop().scope.clear()
+
                     return open.apply(this, false)
                 }
 
