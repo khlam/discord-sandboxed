@@ -1,5 +1,5 @@
 const {app} = require('electron')
-const fs = require('file-system')
+const fs = require('fs')
 const path = require('path')
 
 function _saveToConfig (configObj) {
