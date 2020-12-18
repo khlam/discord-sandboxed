@@ -5,6 +5,7 @@ const URL = require('url').URL
 const {clipboard} = require('electron')
 const config = require('./src/config')
 let ioHook = null
+const { session } = require('electron')
 
 try {
   ioHook = require('iohook')
@@ -272,6 +273,7 @@ app.on ('browser-window-focus', function (event, browserWindow) {
 app.on('ready', () => {
   // Handle permission requests
   webViewSession = mainWindow.webContents.session
+
   webViewSession.setPermissionRequestHandler((webContents, permission, callback) => { // deny all permissions
       const url = webContents.getURL()
       if (url.startsWith('https://discord.com/')) {
