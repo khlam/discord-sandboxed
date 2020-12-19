@@ -109,7 +109,9 @@ function createSettingsWindow() {
   settingsWindow = new BrowserWindow({
     width: 700,
     height: 400,
+    show: true,
     resizable: false,
+    alwaysOnTop:true,
     icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/settingsLoad.js'),
@@ -401,7 +403,12 @@ ipcMain.on('asynchronous-message', (event, _data) => {
           isChangingPTTKey = true
           console.log("waiting for user to rebind")
           if (settingsWindow && isChangingPTTKey) {
+            
             restartioHook().then(v => {
+
+              mainWindow.blur()
+              settingsWindow.showInactivae()
+
               ioHook.once('keydown', event => {
                 if (settingsWindow && isChangingPTTKey) {
                   console.log("rebind success")
@@ -411,10 +418,11 @@ ipcMain.on('asynchronous-message', (event, _data) => {
                   saveConfig(configObj)
                   settingsWindow.webContents.send('settingsObj', configObj)
                   setPTTKey()
+                  settingsWindow.show()
                 }
               })
               
-              // If user uses mouse button for PTT, ignore mouse 1
+              // Ignore using left click (mouse1)
               ioHook.once('mousedown', event => {
                 if (settingsWindow && isChangingPTTKey && event.button !== 1) {
                   console.log("rebind success")
@@ -424,6 +432,7 @@ ipcMain.on('asynchronous-message', (event, _data) => {
                   saveConfig(configObj)
                   settingsWindow.webContents.send('settingsObj', configObj)
                   setPTTKey()
+                  settingsWindow.show()
                 }
               })
             })

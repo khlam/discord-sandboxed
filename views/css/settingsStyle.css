@@ -10,6 +10,8 @@ html, body{
     color: #FFFFFF;
 }
 
-#niceButton {
-    background-color: rgb(255, 59, 48);
+.niceButton {
+    margin: 10px;
+    color: #FFFFFF;
+    background-color: #000000;
 }
