@@ -407,8 +407,7 @@ ipcMain.on('asynchronous-message', (event, _data) => {
             restartioHook().then(v => {
 
               mainWindow.blur()
-              settingsWindow.showInactivae()
-
+              
               ioHook.once('keydown', event => {
                 if (settingsWindow && isChangingPTTKey) {
                   console.log("rebind success")
@@ -418,7 +417,6 @@ ipcMain.on('asynchronous-message', (event, _data) => {
                   saveConfig(configObj)
                   settingsWindow.webContents.send('settingsObj', configObj)
                   setPTTKey()
-                  settingsWindow.show()
                 }
               })
               
@@ -432,7 +430,6 @@ ipcMain.on('asynchronous-message', (event, _data) => {
                   saveConfig(configObj)
                   settingsWindow.webContents.send('settingsObj', configObj)
                   setPTTKey()
-                  settingsWindow.show()
                 }
               })
             })
