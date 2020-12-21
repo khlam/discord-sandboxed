@@ -28,7 +28,7 @@ jobs:
         shell: bash
 
       - name: Label as Nightly
-        if: "endsWith(github.ref, 'fs-and-github-actions')"
+        if: "endsWith(github.ref, 'dev')"
         run: |
           echo "LABEL=$(echo 'nightly')" >> $GITHUB_ENV
           echo "PRERELEASE=$(echo true)" >> $GITHUB_ENV
