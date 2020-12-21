@@ -67,10 +67,16 @@ function createMainWindow () {
     icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/mainLoad.js'),
+      partition: 'persist:discord',
       nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
       enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
-      partition: 'persist:discord',
-      webviewTag: true
+      webviewTag: true,
+      sandbox: true,
+      nodeIntegrationInSubFrames: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      plugins: false,
+      experimentalFeatures: false
     },
     frame: false
   })
@@ -92,8 +98,15 @@ function createLogWindow() {
     icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/logLoad.js'),
-      nodeIntegration: false,
-      enableRemoteModule: false,
+      nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
+      enableRemoteModule: false, // https://electronjs.org/docs/tutorial/security#15-disable-the-remote-module
+      webviewTag: true,
+      sandbox: true,
+      nodeIntegrationInSubFrames: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      plugins: false,
+      experimentalFeatures: false
     },
     frame: false
   })
@@ -170,11 +183,12 @@ function setPTTKey() {
       pttEnable = 'mousedown'
       pttDisable = 'mouseup'
       pttWatch = 'button'
-    }
-    if (configObj.pttDevice === 'keyboard'){
+    }else if (configObj.pttDevice === 'keyboard'){
       pttEnable = 'keydown'
       pttDisable = 'keyup'
       pttWatch = 'keycode'
+    }else {
+      console.log("ERROR: configObj did not set PTT device to mouse or keyboard.")
     }
     ioHook.on(pttEnable, event => {
       if (event[pttWatch] == configObj.key && (micPermissionGranted === true) && (isConnected === true) && (isChangingPTTKey === false)) {
