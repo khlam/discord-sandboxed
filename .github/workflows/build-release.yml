@@ -1,0 +1,80 @@
+name: build-release
+
+on:
+  push:
+    branches: [ master, dev]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, '[skip build]')"
+
+    strategy:
+      matrix:
+        os: [windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.4.0
+
+      - name: Get Version
+        run: |
+          echo "VERSION=$(echo $(node -p "require(\"./package.json\").version"))" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Label as Nightly
+        if: "endsWith(github.ref, 'fs-and-github-actions')"
+        run: |
+          echo "LABEL=$(echo 'nightly')" >> $GITHUB_ENV
+          echo "PRERELEASE=$(echo true)" >> $GITHUB_ENV
+        shell: bash
+      
+      - name: Label as Stable
+        if: "endsWith(github.ref, 'master')"
+        run: |
+          echo "LABEL=stable" >> $GITHUB_ENV
+          echo "PRERELEASE=$(echo false)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Label Release
+        run: echo "RELEASELABEL=$(echo $VERSION-$LABEL)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Get Zip Name
+        run: echo "ZIPNAME=$(echo DiscordSandbox-$RELEASELABEL-win32x64.zip)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build and Release
+        run: npm run package-win
+
+      - name: Zip Release with Readme and License
+        run: 7z a $ZIPNAME ./release/*.exe README.md LICENSE.md
+        shell: bash
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASELABEL }}
+          release_name: ${{ env.RELEASELABEL }}
+          draft: false
+          prerelease: ${{ env.PRERELEASE }} 
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.ZIPNAME }}
+          asset_name: ${{ env.ZIPNAME }}
+          asset_content_type: application/zip
