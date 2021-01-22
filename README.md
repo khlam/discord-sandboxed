@@ -8,7 +8,7 @@ Discord-Sandbox isolates the Discord client from reading background processes by
 
 Note that since this client is running the Discord web client, the following features will NOT be available.
 
-    - Viewing Streams or Streaming your desktop
+    - Streaming your desktop
     - Discord's "High Quality Audio" or whatever
 
 
