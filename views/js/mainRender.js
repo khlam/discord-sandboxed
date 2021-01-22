@@ -93,11 +93,15 @@ onload = () => {
         'DELETE',                                      // Leaving a guild / Deleting messages
         'https://discord.com/api/v8/channels/',        // Text channel address
         'https://discord.com/api/v8/auth/login',       // Login address
+        'https://discord.com/api/v8/auth/register',    // Register address
+        'https://discord.com/api/v8/auth/mfa/totp',    // 2FA fix
+        'https://discord.com/api/v8/gifs/trending',    // Trending gifs
+        'https://discord.com/api/v8/gifs/search',      // Gif search
         'https://discord.com/api/v8/invites/',         // Accepting guild invite
         'https://discord.com/api/v8/voice/regions',    // Required when creating new guild
         'https://discord.com/api/v8/guilds',           // Creating a guild
-        'https://discord.com/api/v8/gateway',         // This may be required to get past login screen if not cached locally
-        'https://discord.com/api/v8/applications/',
+        'https://discord.com/api/v8/gateway',          // This may be required to get past login screen if not cached locally
+        'https://discord.com/api/v8/applications/', 
         'https://discord.com/api/v8/users/'
     ]
 
