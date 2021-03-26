@@ -1,6 +1,6 @@
 {
   "name": "discordsandbox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Discord Sandboxed",
   "main": "main.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Kin-Ho Lam",
   "license": "GNU GENERAL PUBLIC LICENSE Version 3",
   "devDependencies": {
-    "electron": "^7.2.4",
+    "electron": "^12.0.2",
     "electron-builder": "^21.2.0"
   },
   "dependencies": {
