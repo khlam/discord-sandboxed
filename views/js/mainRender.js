@@ -159,14 +159,15 @@ onload = () => {
         `)
 
         webview.executeJavaScript(`
-        let dlButton = document.querySelectorAll('[aria-label="Download Apps"]')
         t = setInterval(function(){
+            let dlButton = document.querySelectorAll('[aria-label="Servers sidebar"]')
             if(dlButton.length != 0) {
                 console.log("--discord-load-complete")
                 clearInterval(t)
                 isMicMuted()
             }else {
                 console.log("waiting for load")
+                console.log(dlButton)
             }
         }, 500);
         `)

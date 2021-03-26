@@ -498,7 +498,7 @@ app.on('ready', event => {
     })
     .then(configObj => {
       console.log(configObj)
-      restartioHook().then(v => {
+      restartioHook().then(() => {
         setPTTKey()
       })
   })
