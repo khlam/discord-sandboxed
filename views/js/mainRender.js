@@ -159,6 +159,10 @@ onload = () => {
         `)
 
         webview.executeJavaScript(`
+<<<<<<< HEAD
+=======
+        let dlButton = document.querySelectorAll('[aria-label="Download Apps"]')
+>>>>>>> dev
         t = setInterval(function(){
             let dlButton = document.querySelectorAll('[aria-label="Servers sidebar"]')
             if(dlButton.length != 0) {
