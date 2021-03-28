@@ -86,7 +86,6 @@ onload = () => {
     // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
         
-        // Discord does not do client-side hashing
         webview.executeJavaScript(`
         (function(open, send) {
             let whiteList = ${_whiteList}
@@ -159,10 +158,7 @@ onload = () => {
         `)
 
         webview.executeJavaScript(`
-<<<<<<< HEAD
-=======
         let dlButton = document.querySelectorAll('[aria-label="Download Apps"]')
->>>>>>> dev
         t = setInterval(function(){
             let dlButton = document.querySelectorAll('[aria-label="Servers sidebar"]')
             if(dlButton.length != 0) {
