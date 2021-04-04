@@ -52,11 +52,9 @@ function unmuteMic() {
 }
 
 function muteMic() {
-  if (selfMute === false) {
-    console.log("Not Talking")
-    mainWindow.webContents.send('micClose', 'mic-closed')
-    mainWindow.setTitle("MIC CLOSED")
-  }
+  console.log("Not Talking")
+  mainWindow.webContents.send('micClose', 'mic-closed')
+  mainWindow.setTitle("MIC CLOSED")
 }
 
 function createMainWindow () {
@@ -64,7 +62,6 @@ function createMainWindow () {
   mainWindow = new BrowserWindow({
     width: 1230,
     height: 800,
-    icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/mainLoad.js'),
       partition: 'persist:discord',
@@ -95,7 +92,6 @@ function createLogWindow() {
     width: 700,
     height: 400,
     resizable: false,
-    icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/logLoad.js'),
       nodeIntegration: false, // https://electronjs.org/docs/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
@@ -125,7 +121,6 @@ function createSettingsWindow() {
     show: true,
     resizable: false,
     alwaysOnTop:true,
-    icon: './views/assets/icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'src/settingsLoad.js'),
       nodeIntegration: false,
@@ -190,6 +185,7 @@ function setPTTKey() {
     }else {
       console.log("ERROR: configObj did not set PTT device to mouse or keyboard.")
     }
+
     ioHook.on(pttEnable, event => {
       if (event[pttWatch] == configObj.key && (micPermissionGranted === true) && (isConnected === true) && (isChangingPTTKey === false)) {
         clearTimeout(muteTimeout)
@@ -205,6 +201,7 @@ function setPTTKey() {
         }
       }
     })
+
   }else {
     console.log("Not listening for keypresses. ioHook library error or PTT keys not set.")
   }
@@ -258,16 +255,14 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
 })
 
 app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#12-disable-or-limit-navigation
-  contents.on('will-navigate', (event, navigationUrl) => {
+  contents.on('will-navigate', (event, navigationUrl) => { // https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
     const parsedUrl = new URL(navigationUrl)
     console.log(`will-navigate ${navigationUrl}`)
     if (parsedUrl.origin !== 'https://discord.com/') { // Limit navigation to discordapp.com; not really relevant
       event.preventDefault()
     }
   })
-})
 
-app.on('web-contents-created', (event, contents) => { // https://electronjs.org/docs/tutorial/security#13-disable-or-limit-creation-of-new-windows
   contents.on('new-window', async (event, navigationUrl) => {
     clipboard.writeText(navigationUrl, 'selection') // I really hope this is safe to do. Could also do a little URL cleaning here to remove trackers
     console.log(`URL ${navigationUrl.toString().slice(0, 20)} Copied to Clipboard`)
@@ -275,6 +270,7 @@ app.on('web-contents-created', (event, contents) => { // https://electronjs.org/
     //event.preventDefault() // Prevents external links from opening
   })
 })
+
 /*  ----  */
 
 
@@ -498,7 +494,7 @@ app.on('ready', event => {
     })
     .then(configObj => {
       console.log(configObj)
-      restartioHook().then(v => {
+      restartioHook().then(() => {
         setPTTKey()
       })
   })

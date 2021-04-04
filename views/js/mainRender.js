@@ -40,6 +40,7 @@ function removeBloat(webview) {
         'noticeBrand',
         'actionButtons-14eAc_',
     ]
+    webview.executeJavaScript(`document.querySelectorAll('[aria-label="Download Apps"]')[document.querySelectorAll('[aria-label="Download Apps"]').length - 1].style.display = 'none';`) // Remove download button
     bloatList.forEach(function(tag){
         webview.executeJavaScript(`
             document.querySelectorAll("div[class^=${tag}]").forEach(e => {
@@ -48,27 +49,6 @@ function removeBloat(webview) {
             })
         `)
     })
-}
-
-// Creates an observer for user list to detect if server is switched
-function userListChangeListener(webview) {
-    webview.executeJavaScript(`
-    const userList = document.getElementsByClassName("sidebar-2K8pFh")[0]
-    const userListconfig = { attributes: false, childList: true, subtree: true, characterData: false };
-    
-    const userListChangeCallback = function(mutationsList, observer) {
-        console.log('--user list changed');
-
-        if (document.querySelectorAll('[aria-label="Disconnect"]').length === 1){
-            console.log('--user is connected to voice server')
-        }else {
-            console.log('--user is not connected to voice server')
-        }
-
-    };
-    const userListObserver = new MutationObserver(userListChangeCallback);
-    userListObserver.observe(userList, userListconfig);
-    `)
 }
 
 function userMuteDeafenListener(webview) {
@@ -106,7 +86,6 @@ onload = () => {
     // Insert JS to detect when discord finishes loading
     webview.addEventListener('did-finish-load', function() {
         
-        // Discord does not do client-side hashing
         webview.executeJavaScript(`
         (function(open, send) {
             let whiteList = ${_whiteList}
@@ -179,14 +158,16 @@ onload = () => {
         `)
 
         webview.executeJavaScript(`
-        let dlButton = document.getElementsByClassName("listItem-2P_4kh");
+        let dlButton = document.querySelectorAll('[aria-label="Download Apps"]')
         t = setInterval(function(){
+            let dlButton = document.querySelectorAll('[aria-label="Servers sidebar"]')
             if(dlButton.length != 0) {
                 console.log("--discord-load-complete")
                 clearInterval(t)
                 isMicMuted()
             }else {
                 console.log("waiting for load")
+                console.log(dlButton)
             }
         }, 500);
         `)
@@ -205,15 +186,14 @@ onload = () => {
 
    // Send commands to preload.js
    webview.addEventListener('console-message', (e) => {
-       
-        if (e.message === "--user is connected to voice server") {
+        if (e.message.includes("RTC media connection state: CONNECTED")) {
             console.log("Connected to server")
             window.postMessage({ type: "connected"}, "*")
             removeBloat(webview)
             isConnectedToVoiceServer = true
         }
 
-        if (e.message === "--user is not connected to voice server") {
+        if (e.message.includes("RTC media connection state: DISCONNECTED")) {
             console.log("Disconnected from server")
             window.postMessage({ type: "disconnected"}, "*")
             isConnectedToVoiceServer = false
@@ -231,8 +211,6 @@ onload = () => {
 
         // Execute JS into the webview after login
         if (e.message === "--discord-load-complete") {
-            webview.executeJavaScript(`document.getElementsByClassName("listItem-2P_4kh")[document.getElementsByClassName("listItem-2P_4kh").length - 1].style.display = 'none';`) // Remove download button            
-            userListChangeListener(webview)
             userMuteDeafenListener(webview)
             removeBloat(webview)
         }

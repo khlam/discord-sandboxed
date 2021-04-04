@@ -1,6 +1,6 @@
 {
   "name": "discordsandbox",
-  "version": "1.0.0",
+  "version": "1.1.4",
   "description": "Discord Sandboxed",
   "main": "main.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Kin-Ho Lam",
   "license": "GNU GENERAL PUBLIC LICENSE Version 3",
   "devDependencies": {
-    "electron": "^7.2.4",
+    "electron": "^9.4.0",
     "electron-builder": "^21.2.0"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
   },
   "iohook": {
     "targets": [
-      "electron-75"
+      "electron-80"
     ],
     "platforms": [
       "win32",
